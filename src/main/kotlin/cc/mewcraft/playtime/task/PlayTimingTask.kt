@@ -1,0 +1,53 @@
+package cc.mewcraft.playtime.task
+
+import cc.mewcraft.playtime.Playtime
+import cc.mewcraft.playtime.data.PlayTimeData
+import cc.mewcraft.playtime.data.PlayTimeDataManager
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.util.*
+import java.util.concurrent.ConcurrentHashMap
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
+
+class PlayTimingTask(
+    private val plugin: Playtime,
+    private val manager: PlayTimeDataManager,
+) {
+    private val server = plugin.server
+
+    private var scheduledTask: Job? = null
+    private var saveTask: Job? = null
+
+    private val playTimeData: ConcurrentHashMap<UUID, Long> = ConcurrentHashMap()
+
+    fun start() {
+        val delayDuration = 1.toDuration(DurationUnit.SECONDS)
+        scheduledTask = plugin.scope.launch {
+            while (true) {
+                val players = server.allPlayers
+                for (player in players) {
+                    val uuid = player.uniqueId
+                    val time = playTimeData.getOrDefault(uuid, 0)
+                    playTimeData[uuid] = time + delayDuration.inWholeMilliseconds
+                }
+                delay(delayDuration)
+            }
+        }
+
+        saveTask = plugin.scope.launch {
+            while (true) {
+                for (playTimeDatum in playTimeData) {
+                    manager.addPlayTime(playTimeDatum.key, PlayTimeData(playTimeDatum.value))
+                }
+                playTimeData.clear()
+                delay(1.toDuration(DurationUnit.MINUTES))
+            }
+        }
+    }
+
+    fun stop() {
+        scheduledTask?.cancel()
+    }
+}
