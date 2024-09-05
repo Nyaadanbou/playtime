@@ -1,6 +1,5 @@
 package cc.mewcraft.playtime
 
-import cc.mewcraft.playtime.command.PlayTimeCommand
 import cc.mewcraft.playtime.config.PlayTimeConfig
 import cc.mewcraft.playtime.coroutine.VelocityCoroutineDispatcher
 import cc.mewcraft.playtime.data.PlayTimeDataManager
@@ -65,8 +64,6 @@ class Playtime @Inject constructor(
         }
 
         val dataManager = PlayTimeDataManager.create(database, logger)
-        val mainCommand = PlayTimeCommand.create(server, dataManager)
-        server.commandManager.register("playtime", mainCommand)
 
         task = PlayTimingTask(this, dataManager)
         task.start()
