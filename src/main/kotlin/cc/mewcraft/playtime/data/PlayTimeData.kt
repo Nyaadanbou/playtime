@@ -2,8 +2,7 @@ package cc.mewcraft.playtime.data
 
 import java.time.Duration
 
-@JvmInline
-value class PlayTimeData(
+data class PlayTimeData(
     val playTime: Long = 0
 ) {
     operator fun plus(other: PlayTimeData): PlayTimeData {

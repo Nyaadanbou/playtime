@@ -64,11 +64,11 @@ class Playtime @Inject constructor(
             database.load()
         }
 
-        val manager = PlayTimeDataManager.create(database, logger)
-        val mainCommand = PlayTimeCommand.create(server, manager)
+        val dataManager = PlayTimeDataManager.create(database, logger)
+        val mainCommand = PlayTimeCommand.create(server, dataManager)
         server.commandManager.register("playtime", mainCommand)
 
-        task = PlayTimingTask(this, manager)
+        task = PlayTimingTask(this, dataManager)
         task.start()
     }
 

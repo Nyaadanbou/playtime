@@ -4,7 +4,7 @@ import org.jetbrains.gradle.ext.taskTriggers
 plugins {
     kotlin("jvm") version "2.0.20"
     kotlin("kapt") version "2.0.20"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("com.gradleup.shadow") version "8.3.0"
     id("org.jetbrains.gradle.plugin.idea-ext") version "1.1.8"
 }
 
@@ -25,13 +25,13 @@ dependencies {
     compileOnly("com.velocitypowered:velocity-api:3.3.0-SNAPSHOT")
     kapt("com.velocitypowered:velocity-api:3.3.0-SNAPSHOT")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC.2")
 
     implementation("com.zaxxer:HikariCP:5.1.0")
     implementation("org.mariadb.jdbc:mariadb-java-client:3.4.1")
 }
 
-val targetJavaVersion = 17
+val targetJavaVersion = 21
 kotlin {
     jvmToolchain(targetJavaVersion)
 }
