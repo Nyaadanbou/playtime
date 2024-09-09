@@ -1,7 +1,6 @@
 plugins {
     kotlin("jvm") version "2.0.20"
     kotlin("kapt") version "2.0.20"
-    id("org.jetbrains.gradle.plugin.idea-ext") version "1.1.8"
 }
 
 allprojects {
@@ -13,6 +12,13 @@ allprojects {
         maven("https://oss.sonatype.org/content/groups/public/") {
             name = "sonatype"
         }
+
+        maven("https://repo.mewcraft.cc/private") {
+            credentials {
+                username = project.providers.gradleProperty("nyaadanbouUsername").getOrElse("")
+                password = project.providers.gradleProperty("nyaadanbouPassword").getOrElse("")
+            }
+        }
     }
 
     group = "cc.mewcraft"
@@ -22,7 +28,6 @@ allprojects {
 subprojects {
     apply(plugin = "kotlin")
     apply(plugin = "kotlin-kapt")
-    apply(plugin = "org.jetbrains.gradle.plugin.idea-ext")
 
     val targetJavaVersion = 21
     kotlin {
