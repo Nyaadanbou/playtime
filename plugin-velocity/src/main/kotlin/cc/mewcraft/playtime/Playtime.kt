@@ -25,7 +25,7 @@ import kotlin.io.path.exists
 @Plugin(
     id = "playtime",
     name = "playtime",
-    version = BuildConstants.VERSION
+    version = "1.0.1-SNAPSHOT",
 )
 class Playtime @Inject constructor(
     val logger: Logger,

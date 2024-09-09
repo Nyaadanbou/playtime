@@ -4,6 +4,7 @@ plugins {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
+    compileOnly("cc.mewcraft.core.messenger:messenger-paper:1.0-SNAPSHOT")
 
     testImplementation(kotlin("test"))
 }
