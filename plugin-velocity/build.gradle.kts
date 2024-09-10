@@ -5,6 +5,7 @@ plugins {
 dependencies {
     compileOnly("com.velocitypowered:velocity-api:3.3.0-SNAPSHOT")
     compileOnly("cc.mewcraft.core.messenger:messenger-velocity:1.0-SNAPSHOT")
+    implementation(project(":common"))
 
     kapt("com.velocitypowered:velocity-api:3.3.0-SNAPSHOT")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")

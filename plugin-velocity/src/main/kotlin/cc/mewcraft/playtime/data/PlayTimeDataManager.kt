@@ -17,11 +17,11 @@ interface PlayTimeDataManager {
         }
     }
 
-    suspend fun getPlayTime(uniqueId: UUID): PlayTimeData
+    suspend fun getPlayTime(uniqueId: UUID): PlaytimeData
 
-    suspend fun setPlayTime(uniqueId: UUID, timeData: PlayTimeData)
+    suspend fun setPlayTime(uniqueId: UUID, timeData: PlaytimeData)
 
-    suspend fun addPlayTime(uniqueId: UUID, timeData: PlayTimeData) {
+    suspend fun addPlayTime(uniqueId: UUID, timeData: PlaytimeData) {
         val currentData = getPlayTime(uniqueId)
         setPlayTime(uniqueId, currentData + timeData)
     }
@@ -31,20 +31,20 @@ private class PlayTimeDataManagerImpl(
     private val database: PlayTimeDatabase,
     private val logger: Logger
 ) : PlayTimeDataManager {
-    private val dataCache: LoadingCache<UUID, Deferred<PlayTimeData>> = Caffeine.newBuilder()
+    private val dataCache: LoadingCache<UUID, Deferred<PlaytimeData>> = Caffeine.newBuilder()
         .expireAfterAccess(3, TimeUnit.MINUTES)
         .build { uniqueId ->
             plugin.scope.async {
-                database.getPlayTime(uniqueId) ?: PlayTimeData()
+                database.getPlayTime(uniqueId) ?: PlaytimeData()
             }
         }
 
-    override suspend fun getPlayTime(uniqueId: UUID): PlayTimeData {
+    override suspend fun getPlayTime(uniqueId: UUID): PlaytimeData {
         logger.info("Getting play time for $uniqueId")
         return dataCache[uniqueId].await()
     }
 
-    override suspend fun setPlayTime(uniqueId: UUID, timeData: PlayTimeData) {
+    override suspend fun setPlayTime(uniqueId: UUID, timeData: PlaytimeData) {
         logger.info("Setting play time for $uniqueId to $timeData")
         database.setPlayTime(uniqueId, timeData)
         dataCache.invalidate(uniqueId)

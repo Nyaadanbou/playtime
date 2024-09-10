@@ -1,7 +1,7 @@
 package cc.mewcraft.playtime.storage
 
 import cc.mewcraft.playtime.config.PlayTimeConfig
-import cc.mewcraft.playtime.data.PlayTimeData
+import cc.mewcraft.playtime.data.PlaytimeData
 import cc.mewcraft.playtime.sql.PlayTimeSql
 import cc.mewcraft.playtime.sql.Sql
 import cc.mewcraft.playtime.util.use
@@ -22,9 +22,9 @@ internal interface PlayTimeDatabase {
 
     suspend fun load()
 
-    suspend fun getPlayTime(uniqueId: UUID): PlayTimeData?
+    suspend fun getPlayTime(uniqueId: UUID): PlaytimeData?
 
-    suspend fun setPlayTime(uniqueId: UUID, timeData: PlayTimeData)
+    suspend fun setPlayTime(uniqueId: UUID, timeData: PlaytimeData)
 
     suspend fun close()
 }
@@ -52,7 +52,7 @@ private class MariadbPlayTimeDatabase(
     private val connection: Connection
         get() = sql.connection.also { it.autoCommit = false }
 
-    override suspend fun getPlayTime(uniqueId: UUID): PlayTimeData? = withContext(Dispatchers.IO) {
+    override suspend fun getPlayTime(uniqueId: UUID): PlaytimeData? = withContext(Dispatchers.IO) {
         use {
             with(connection.use()) {
                 val getTimeStatement = prepareStatement(
@@ -66,14 +66,14 @@ private class MariadbPlayTimeDatabase(
 
                 val result = getTimeStatement.executeQuery()
                 if (result.next()) {
-                    return@withContext PlayTimeData(result.getLong("play_time"))
+                    return@withContext PlaytimeData(result.getLong("play_time"))
                 }
             }
             return@withContext null
         }
     }
 
-    override suspend fun setPlayTime(uniqueId: UUID, timeData: PlayTimeData) = withContext(Dispatchers.IO) {
+    override suspend fun setPlayTime(uniqueId: UUID, timeData: PlaytimeData) = withContext(Dispatchers.IO) {
         use {
             with(connection.use()) {
                 try {

@@ -1,7 +1,7 @@
 package cc.mewcraft.playtime.task
 
 import cc.mewcraft.playtime.Playtime
-import cc.mewcraft.playtime.data.PlayTimeData
+import cc.mewcraft.playtime.data.PlaytimeData
 import cc.mewcraft.playtime.data.PlayTimeDataManager
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -39,7 +39,7 @@ class PlayTimingTask(
         saveTask = plugin.scope.launch {
             while (true) {
                 for (playTimeDatum in playTimeData) {
-                    manager.addPlayTime(playTimeDatum.key, PlayTimeData(playTimeDatum.value))
+                    manager.addPlayTime(playTimeDatum.key, PlaytimeData(playTimeDatum.value))
                 }
                 playTimeData.clear()
                 delay(1.toDuration(DurationUnit.MINUTES))
