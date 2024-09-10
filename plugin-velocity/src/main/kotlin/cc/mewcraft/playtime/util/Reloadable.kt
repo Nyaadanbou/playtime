@@ -5,9 +5,9 @@ import cc.mewcraft.playtime.plugin
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
-fun <T> reloadable(loader: () -> T) = Reloadable(loader)
+internal fun <T> reloadable(loader: () -> T) = Reloadable(loader)
 
-class Reloadable<T>(private val loader: () -> T) : ReadOnlyProperty<Any?, T> {
+internal class Reloadable<T>(private val loader: () -> T) : ReadOnlyProperty<Any?, T> {
     private var value: T? = null
 
     init {

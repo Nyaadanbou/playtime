@@ -3,7 +3,7 @@ package cc.mewcraft.playtime.sql
 /**
  * Represents the credentials for a remote database.
  */
-data class DatabaseCredentials(
+internal data class DatabaseCredentials(
     val address: String,
     val port: Int,
     val database: String,

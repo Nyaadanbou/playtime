@@ -29,7 +29,7 @@ import kotlin.io.path.exists
     name = "playtime",
     version = "1.0.1-SNAPSHOT",
 )
-class Playtime @Inject constructor(
+internal class Playtime @Inject constructor(
     val logger: Logger,
     val server: ProxyServer,
     @DataDirectory
