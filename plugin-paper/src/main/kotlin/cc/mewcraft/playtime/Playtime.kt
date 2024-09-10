@@ -14,7 +14,7 @@ import java.util.*
 import kotlin.jvm.optionals.getOrNull
 
 @Suppress("UnstableApiUsage")
-class Playtime : SuspendingJavaPlugin() {
+internal class Playtime : SuspendingJavaPlugin() {
     private lateinit var channel: GetPlaytimeRequestChannel
 
     private fun registerCommand() {

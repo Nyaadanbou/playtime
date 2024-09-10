@@ -6,7 +6,7 @@ import java.sql.Connection
 /**
  * Represents an individual SQL datasource, created by the library.
  */
-interface Sql {
+internal interface Sql {
     val hikari: HikariDataSource?
 
     val connection: Connection

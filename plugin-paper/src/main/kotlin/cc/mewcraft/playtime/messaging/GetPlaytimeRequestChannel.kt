@@ -11,7 +11,7 @@ import java.util.UUID
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
-class GetPlaytimeRequestChannel(
+internal class GetPlaytimeRequestChannel(
     private val logger: Logger,
     messenger: Messenger,
 ) {

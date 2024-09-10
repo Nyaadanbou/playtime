@@ -1,4 +1,5 @@
 plugins {
+    `maven-publish`
     id("com.gradleup.shadow") version "8.3.0"
 }
 
@@ -24,5 +25,25 @@ tasks.processResources {
     filteringCharset = "UTF-8"
     filesMatching("paper-plugin.yml") {
         expand(props)
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "nyaadanbou"
+            url = uri("https://repo.mewcraft.cc/private")
+            credentials(PasswordCredentials::class)
+            authentication {
+                create<BasicAuthentication>("basic")
+            }
+        }
+    }
+
+    publications {
+        create<MavenPublication>("maven") {
+            artifactId = "playtime-paper"
+            from(components["java"])
+        }
     }
 }

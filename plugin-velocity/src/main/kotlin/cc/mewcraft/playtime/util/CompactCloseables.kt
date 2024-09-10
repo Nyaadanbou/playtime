@@ -3,7 +3,7 @@ package cc.mewcraft.playtime.util
 // To simplify nested `use` on AutoCloseables
 // Source: https://discuss.kotlinlang.org/t/is-there-standard-way-to-use-multiple-resources/2613
 
-class Resources : AutoCloseable {
+internal class Resources : AutoCloseable {
     private val resources = mutableListOf<AutoCloseable>()
 
     fun <T : AutoCloseable> T.use(): T {
@@ -30,4 +30,4 @@ class Resources : AutoCloseable {
     }
 }
 
-inline fun <T> use(block: Resources.() -> T): T = Resources().use(block)
+internal inline fun <T> use(block: Resources.() -> T): T = Resources().use(block)

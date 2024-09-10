@@ -1,4 +1,5 @@
 plugins {
+    `maven-publish`
     id("com.gradleup.shadow") version "8.3.0"
 }
 
@@ -13,4 +14,24 @@ dependencies {
 
     implementation("com.zaxxer:HikariCP:5.1.0")
     implementation("org.mariadb.jdbc:mariadb-java-client:3.4.1")
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "nyaadanbou"
+            url = uri("https://repo.mewcraft.cc/private")
+            credentials(PasswordCredentials::class)
+            authentication {
+                create<BasicAuthentication>("basic")
+            }
+        }
+    }
+
+    publications {
+        create<MavenPublication>("maven") {
+            artifactId = "playtime-velocity"
+            from(components["java"])
+        }
+    }
 }
