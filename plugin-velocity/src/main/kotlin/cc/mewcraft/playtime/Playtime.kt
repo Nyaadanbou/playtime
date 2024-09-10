@@ -1,9 +1,11 @@
 package cc.mewcraft.playtime
 
+import cc.mewcraft.core.messenger.redis.RedisProvider
 import cc.mewcraft.playtime.config.PlayTimeConfig
 import cc.mewcraft.playtime.coroutine.VelocityCoroutineDispatcher
 import cc.mewcraft.playtime.data.PlayTimeDataManager
 import cc.mewcraft.playtime.event.PlayTimeReloadEvent
+import cc.mewcraft.playtime.messaging.GetPlaytimeResponseChannel
 import cc.mewcraft.playtime.storage.PlayTimeDatabase
 import cc.mewcraft.playtime.task.PlayTimingTask
 import com.google.inject.Inject
@@ -38,12 +40,14 @@ class Playtime @Inject constructor(
     }
 
     private lateinit var task: PlayTimingTask
-    lateinit var scope: CoroutineScope
-        private set
-
     private val velocityCoroutineDispatcher by lazy {
         VelocityCoroutineDispatcher(server.pluginManager.ensurePluginContainer(this), server)
     }
+
+    private lateinit var channel: GetPlaytimeResponseChannel
+
+    lateinit var scope: CoroutineScope
+        private set
 
     @Subscribe
     fun onProxyInitialization(event: ProxyInitializeEvent) {
@@ -67,16 +71,19 @@ class Playtime @Inject constructor(
 
         task = PlayTimingTask(this, dataManager)
         task.start()
+
+        channel = GetPlaytimeResponseChannel(RedisProvider.getRedis(), dataManager)
     }
 
     @Subscribe
     fun onProxyShutdown(event: ProxyShutdownEvent) {
-        logger.info("Playtime plugin unloaded.")
         instance = null
         dispose()
+        logger.info("Playtime plugin unloaded.")
     }
 
     private fun dispose() {
+        channel.close()
         scope.coroutineContext.cancelChildren()
         scope.cancel()
     }
