@@ -15,7 +15,11 @@ import kotlin.jvm.optionals.getOrNull
 
 @Suppress("UnstableApiUsage")
 internal class Playtime : SuspendingJavaPlugin() {
-    private lateinit var channel: GetPlaytimeRequestChannel
+    companion object {
+        internal var INSTANCE: Playtime? = null
+    }
+
+    lateinit var channel: GetPlaytimeRequestChannel
 
     private fun registerCommand() {
         lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
@@ -41,11 +45,15 @@ internal class Playtime : SuspendingJavaPlugin() {
 
     override fun onEnable() {
         channel = GetPlaytimeRequestChannel(componentLogger, RedisProvider.getRedis())
-
         registerCommand()
+        INSTANCE = this
     }
 
     override fun onDisable() {
+        INSTANCE = null
         channel.close()
     }
 }
+
+internal val plugin: Playtime
+    get() = Playtime.INSTANCE ?: error("Plugin not enabled")

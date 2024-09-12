@@ -10,7 +10,7 @@ internal class GetPlaytimeResponseChannel(
     messenger: Messenger,
     manager: PlayTimeDataManager,
 ) {
-    private val channel: ConversationChannel<GetPlaytimeMessage, GetPlaytimeResponse> = messenger.getConversationChannel(ChannelSupport.GET_PLAYTIME)
+    private val channel: ConversationChannel<GetPlaytimeRequest, GetPlaytimeResponse> = messenger.getConversationChannel(PlaytimeConstants.GET_PLAYTIME_CHANNEL_ID)
 
     init {
         channel.newAgent onReceive@{ _, message ->

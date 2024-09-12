@@ -1,18 +1,14 @@
 plugins {
-    `maven-publish`
-    id("com.gradleup.shadow") version "8.3.0"
+    id("playtime-conventions")
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
     compileOnly("cc.mewcraft.core.messenger:messenger-paper:1.0-SNAPSHOT")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC.2")
     implementation("com.github.shynixn.mccoroutine:mccoroutine-bukkit-api:2.19.0")
     implementation("com.github.shynixn.mccoroutine:mccoroutine-bukkit-core:2.19.0")
-    implementation(project(":common"))
-
-    testImplementation(kotlin("test"))
+    api(project(":common"))
 }
 
 tasks.build {

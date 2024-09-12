@@ -5,7 +5,7 @@ import cc.mewcraft.playtime.data.PlaytimeData
 import com.google.gson.annotations.SerializedName
 import java.util.UUID
 
-data class GetPlaytimeMessage(
+data class GetPlaytimeRequest(
     @SerializedName("player_uuid")
     val playerUniqueId: UUID,
     @SerializedName("id")

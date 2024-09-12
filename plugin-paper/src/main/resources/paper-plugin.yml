@@ -2,3 +2,8 @@ name: Playtime
 version: '1.0-SNAPSHOT'
 main: cc.mewcraft.playtime.Playtime
 api-version: '1.21'
+dependencies:
+  server:
+    Kotlin:
+      required: true
+      join-classpath: true

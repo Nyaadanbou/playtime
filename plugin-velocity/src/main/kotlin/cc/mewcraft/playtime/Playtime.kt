@@ -7,13 +7,14 @@ import cc.mewcraft.playtime.data.PlayTimeDataManager
 import cc.mewcraft.playtime.event.PlayTimeReloadEvent
 import cc.mewcraft.playtime.messaging.GetPlaytimeResponseChannel
 import cc.mewcraft.playtime.storage.PlayTimeDatabase
-import cc.mewcraft.playtime.task.PlayTimingTask
+import cc.mewcraft.playtime.task.PlaytimeTickTask
 import com.google.inject.Inject
 import com.velocitypowered.api.event.EventHandler
 import com.velocitypowered.api.event.PostOrder
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent
+import com.velocitypowered.api.plugin.Dependency
 import com.velocitypowered.api.plugin.Plugin
 import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.ProxyServer
@@ -23,11 +24,11 @@ import java.nio.file.Path
 import kotlin.io.path.createDirectories
 import kotlin.io.path.exists
 
-
 @Plugin(
     id = "playtime",
     name = "playtime",
-    version = "1.0.1-SNAPSHOT",
+    version = "1.0-SNAPSHOT",
+    dependencies = [Dependency(id = "kotlin")]
 )
 internal class Playtime @Inject constructor(
     val logger: Logger,
@@ -39,7 +40,7 @@ internal class Playtime @Inject constructor(
         internal var instance: Playtime? = null
     }
 
-    private lateinit var task: PlayTimingTask
+    private lateinit var task: PlaytimeTickTask
     private val velocityCoroutineDispatcher by lazy {
         VelocityCoroutineDispatcher(server.pluginManager.ensurePluginContainer(this), server)
     }
@@ -69,7 +70,7 @@ internal class Playtime @Inject constructor(
 
         val dataManager = PlayTimeDataManager.create(database, logger)
 
-        task = PlayTimingTask(this, dataManager)
+        task = PlaytimeTickTask(this, dataManager)
         task.start()
 
         channel = GetPlaytimeResponseChannel(RedisProvider.getRedis(), dataManager)
