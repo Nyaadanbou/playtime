@@ -15,10 +15,10 @@ internal class GetPlaytimeRequestChannel(
     private val logger: Logger,
     messenger: Messenger,
 ) {
-    private val channel: ConversationChannel<GetPlaytimeMessage, GetPlaytimeResponse> = messenger.getConversationChannel(ChannelSupport.GET_PLAYTIME)
+    private val channel: ConversationChannel<GetPlaytimeRequest, GetPlaytimeResponse> = messenger.getConversationChannel(PlaytimeConstants.GET_PLAYTIME_CHANNEL_ID)
 
     suspend fun requestPlaytime(playerUniqueId: UUID): PlaytimeData? {
-        val request = GetPlaytimeMessage(playerUniqueId)
+        val request = GetPlaytimeRequest(playerUniqueId)
         val response = CompletableDeferred<PlaytimeData?>()
 
         channel.buildMessage(request, 3.toDuration(DurationUnit.SECONDS))

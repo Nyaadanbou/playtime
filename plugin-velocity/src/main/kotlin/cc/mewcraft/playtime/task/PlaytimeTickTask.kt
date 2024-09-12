@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
-internal class PlayTimingTask(
+internal class PlaytimeTickTask(
     private val plugin: Playtime,
     private val manager: PlayTimeDataManager,
 ) {

@@ -1,6 +1,6 @@
 package cc.mewcraft.playtime.data
 
-import java.time.Duration
+import kotlin.time.Duration
 
 data class PlaytimeData(
     val playTime: Long = 0
@@ -14,10 +14,10 @@ data class PlaytimeData(
     }
 
     operator fun plus(other: Duration): PlaytimeData {
-        return PlaytimeData(playTime + other.toMillis())
+        return PlaytimeData(playTime + other.inWholeMilliseconds)
     }
 
     operator fun minus(other: Duration): PlaytimeData {
-        return PlaytimeData(playTime - other.toMillis())
+        return PlaytimeData(playTime - other.inWholeMilliseconds)
     }
 }
