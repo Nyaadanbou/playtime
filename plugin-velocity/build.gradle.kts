@@ -3,14 +3,14 @@ plugins {
 }
 
 dependencies {
-    compileOnly("com.velocitypowered:velocity-api:3.3.0-SNAPSHOT")
-    compileOnly("cc.mewcraft.core.messenger:messenger-velocity:1.0-SNAPSHOT")
+    compileOnly(libs.velocity)
+    compileOnly(libs.messenger.velocity)
     api(project(":common"))
 
-    kapt("com.velocitypowered:velocity-api:3.3.0-SNAPSHOT")
+    kapt(libs.velocity)
 
-    implementation("com.zaxxer:HikariCP:5.1.0")
-    implementation("org.mariadb.jdbc:mariadb-java-client:3.4.1")
+    implementation(libs.hikaricp)
+    implementation(libs.jdbc.mariadb)
 }
 
 publishing {

@@ -6,4 +6,3 @@ dependencies:
   server:
     Kotlin:
       required: true
-      join-classpath: true
