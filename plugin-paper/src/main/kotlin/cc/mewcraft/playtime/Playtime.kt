@@ -1,59 +1,18 @@
 package cc.mewcraft.playtime
 
-import cc.mewcraft.core.messenger.redis.RedisProvider
-import cc.mewcraft.playtime.messaging.GetPlaytimeRequestChannel
-import com.github.shynixn.mccoroutine.bukkit.SuspendingJavaPlugin
-import com.github.shynixn.mccoroutine.bukkit.scope
-import io.papermc.paper.command.brigadier.Commands
-import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import net.kyori.adventure.identity.Identity
-import org.bukkit.command.CommandSender
+import cc.mewcraft.playtime.data.PlaytimeData
 import java.util.*
-import kotlin.jvm.optionals.getOrNull
 
-@Suppress("UnstableApiUsage")
-internal class Playtime : SuspendingJavaPlugin() {
-    companion object {
-        internal var INSTANCE: Playtime? = null
-    }
-
-    lateinit var channel: GetPlaytimeRequestChannel
-
-    private fun registerCommand() {
-        lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
-            val commands = event.registrar()
-            commands.register(
-                Commands.literal("playtime")
-                    .executes { context ->
-                        val sender = context.source.sender
-                        val uuid = sender.uniqueId ?: return@executes 0
-                        scope.launch(Dispatchers.IO) {
-                            val playtime = channel.requestPlaytime(uuid)
-                            sender.sendMessage("Requested $playtime for $uuid")
-                        }
-                        1
-                    }
-                    .build()
-            )
-        }
-    }
-
-    private val CommandSender.uniqueId: UUID?
-        get() = pointers().get(Identity.UUID).getOrNull()
-
-    override fun onEnable() {
-        channel = GetPlaytimeRequestChannel(componentLogger, RedisProvider.getRedis())
-        registerCommand()
-        INSTANCE = this
-    }
-
-    override fun onDisable() {
-        INSTANCE = null
-        channel.close()
-    }
+/**
+ * 提供获取玩家数据的接口.
+ */
+interface Playtime {
+    /**
+     * 获取玩家的游戏时间数据.
+     *
+     * 当获取到的数据为 null, 表示玩家没有游戏时间数据. (可能是玩家进入服务器未满刷新时间)
+     *
+     * @param uuid 玩家的 UUID.
+     */
+    suspend fun getPlaytime(uuid: UUID): PlaytimeData?
 }
-
-internal val plugin: Playtime
-    get() = Playtime.INSTANCE ?: error("Plugin not enabled")

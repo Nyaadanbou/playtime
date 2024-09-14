@@ -1,6 +1,6 @@
 package cc.mewcraft.playtime.task
 
-import cc.mewcraft.playtime.Playtime
+import cc.mewcraft.playtime.PlaytimePlugin
 import cc.mewcraft.playtime.data.PlaytimeData
 import cc.mewcraft.playtime.data.PlayTimeDataManager
 import kotlinx.coroutines.Job
@@ -12,7 +12,7 @@ import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 internal class PlaytimeTickTask(
-    private val plugin: Playtime,
+    private val plugin: PlaytimePlugin,
     private val manager: PlayTimeDataManager,
 ) {
     private val server = plugin.server
