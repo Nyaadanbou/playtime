@@ -3,11 +3,11 @@ plugins {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
-    compileOnly("cc.mewcraft.core.messenger:messenger-paper:1.0-SNAPSHOT")
+    compileOnly(libs.paper)
+    compileOnly(libs.messenger.paper)
 
-    implementation("com.github.shynixn.mccoroutine:mccoroutine-bukkit-api:2.19.0")
-    implementation("com.github.shynixn.mccoroutine:mccoroutine-bukkit-core:2.19.0")
+    implementation(libs.mccoroutine.bukkit.api)
+    implementation(libs.mccoroutine.bukkit.core)
     api(project(":common"))
 }
 

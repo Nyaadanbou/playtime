@@ -1,0 +1,36 @@
+[versions]
+kotlin = "2.0.20"
+kotlinx = "1.9.0-RC.2"
+paper = "1.21.1-R0.1-SNAPSHOT"
+velocity = "3.3.0-SNAPSHOT"
+mccoroutine = "2.19.0"
+messenger = "1.0-SNAPSHOT"
+
+[libraries]
+
+# Gradle plugins
+
+kotlin-jvm = { group = "org.jetbrains.kotlin.jvm", name = "org.jetbrains.kotlin.jvm.gradle.plugin", version.ref = "kotlin" }
+kotlin-kapt = { group = "org.jetbrains.kotlin.kapt", name = "org.jetbrains.kotlin.kapt.gradle.plugin", version.ref = "kotlin" }
+kotlin-serialization = { group = "org.jetbrains.kotlin.plugin.serialization", name = "org.jetbrains.kotlin.plugin.serialization.gradle.plugin", version.ref = "kotlin" }
+kotlin-atomicfu = { group = "org.jetbrains.kotlin.plugin.atomicfu", name = "org.jetbrains.kotlin.plugin.atomicfu.gradle.plugin", version.ref = "kotlin" }
+
+shadow = { group = "com.gradleup.shadow", name = "shadow-gradle-plugin", version = "8.3.0" }
+
+# Code dependencies
+
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx" }
+
+mccoroutine-bukkit-core = { group = "com.github.shynixn.mccoroutine", name = "mccoroutine-bukkit-core", version.ref = "mccoroutine" }
+mccoroutine-bukkit-api = { group = "com.github.shynixn.mccoroutine", name = "mccoroutine-bukkit-api", version.ref = "mccoroutine" }
+
+messenger-common = { group = "cc.mewcraft.core.messenger", name = "common", version.ref = "messenger" }
+messenger-paper = { group = "cc.mewcraft.core.messenger", name = "messenger-paper", version.ref = "messenger" }
+messenger-velocity = { group = "cc.mewcraft.core.messenger", name = "messenger-velocity", version.ref = "messenger" }
+
+hikaricp = { group = "com.zaxxer", name = "HikariCP", version = "5.1.0" }
+jdbc-mariadb = { group = "org.mariadb.jdbc", name = "mariadb-java-client", version = "3.4.1" }
+gson = { group = "com.google.code.gson", name = "gson", version = "2.10.1" }
+
+paper = { group = "io.papermc.paper", name = "paper-api", version.ref = "paper" }
+velocity = { group = "com.velocitypowered", name = "velocity-api", version.ref = "velocity" }
