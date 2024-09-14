@@ -7,6 +7,8 @@ plugins {
     `maven-publish`
 }
 
+val libs = the<org.gradle.accessors.dm.LibrariesForLibs>()
+
 group = "cc.mewcraft.playtime"
 version = "1.0-SNAPSHOT"
 
@@ -40,21 +42,14 @@ kotlin {
             dependencies {
                 compileOnly(kotlin("stdlib"))
                 compileOnly(kotlin("reflect"))
-                compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC.2")
-                compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.9.0-RC.2") {
-                    exclude("com.google.guava")
-                    exclude("org.jetbrains.kotlin")
-                    exclude("org.jetbrains.kotlinx")
-                }
-                compileOnly("org.jetbrains.kotlinx:atomicfu:0.25.0")
+                compileOnly(libs.kotlinx.coroutines.core)
             }
         }
 
         val test by getting {
             dependencies {
                 implementation(kotlin("test"))
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC.2")
-                implementation("org.jetbrains.kotlinx:atomicfu:0.25.0")
+                implementation(libs.kotlinx.coroutines.core)
             }
         }
     }
