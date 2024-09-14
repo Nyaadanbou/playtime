@@ -30,14 +30,14 @@ import kotlin.io.path.exists
     version = "1.0-SNAPSHOT",
     dependencies = [Dependency(id = "kotlin")]
 )
-internal class Playtime @Inject constructor(
+internal class PlaytimePlugin @Inject constructor(
     val logger: Logger,
     val server: ProxyServer,
     @DataDirectory
     val dataDirectory: Path,
 ) {
     companion object {
-        internal var instance: Playtime? = null
+        internal var instance: PlaytimePlugin? = null
     }
 
     private lateinit var task: PlaytimeTickTask
@@ -104,5 +104,5 @@ internal class Playtime @Inject constructor(
     }
 }
 
-internal val plugin: Playtime
-    get() = Playtime.instance ?: throw IllegalStateException("Playtime plugin is not loaded.")
+internal val plugin: PlaytimePlugin
+    get() = PlaytimePlugin.instance ?: throw IllegalStateException("Playtime plugin is not loaded.")
