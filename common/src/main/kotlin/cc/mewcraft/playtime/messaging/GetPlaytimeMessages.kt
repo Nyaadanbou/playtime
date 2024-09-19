@@ -1,6 +1,6 @@
 package cc.mewcraft.playtime.messaging
 
-import cc.mewcraft.core.messenger.messaging.conversation.ConversationMessage
+import cc.mewcraft.messenger.messaging.conversation.ConversationMessage
 import cc.mewcraft.playtime.data.PlaytimeData
 import com.google.gson.annotations.SerializedName
 import java.util.UUID

@@ -1,16 +1,24 @@
 plugins {
     id("playtime-conventions")
+    id("nyaadanbou-conventions.copy-jar")
 }
 
-dependencies {
-    compileOnly(libs.velocity)
-    compileOnly(libs.messenger.velocity)
-    api(project(":common"))
+version = "1.0.0-SNAPSHOT"
 
+dependencies {
+    api(project(":common"))
+    compileOnly(libs.velocity)
     kapt(libs.velocity)
+    compileOnly(libs.messenger.velocity)
 
     implementation(libs.hikaricp)
     implementation(libs.jdbc.mariadb)
+}
+
+tasks {
+    copyJar {
+        jarName.set("playtime-${project.version}.jar")
+    }
 }
 
 publishing {
@@ -27,7 +35,7 @@ publishing {
 
     publications {
         create<MavenPublication>("maven") {
-            artifactId = "playtime-velocity"
+            artifactId = "velocity"
             from(components["java"])
         }
     }

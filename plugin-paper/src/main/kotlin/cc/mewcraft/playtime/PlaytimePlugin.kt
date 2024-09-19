@@ -1,6 +1,6 @@
 package cc.mewcraft.playtime
 
-import cc.mewcraft.core.messenger.redis.RedisProvider
+import cc.mewcraft.messenger.redis.RedisProvider
 import cc.mewcraft.playtime.data.PlaytimeData
 import cc.mewcraft.playtime.messaging.GetPlaytimeRequestChannel
 import com.github.shynixn.mccoroutine.bukkit.SuspendingJavaPlugin

@@ -3,19 +3,27 @@ plugins {
 }
 
 group = "cc.mewcraft.playtime"
-version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
     gradlePluginPortal()
+
+    // 仓库提供: nyaadanbou version catalog, nyaadanbou conventions
+    maven("https://repo.mewcraft.cc/private") {
+        credentials {
+            username = providers.gradleProperty("nyaadanbouUsername").getOrElse("")
+            password = providers.gradleProperty("nyaadanbouPassword").getOrElse("")
+        }
+    }
 }
 
 dependencies {
-    implementation(libs.shadow)
-    implementation(libs.kotlin.jvm)
-    implementation(libs.kotlin.kapt)
-    implementation(libs.kotlin.serialization)
-    implementation(libs.kotlin.atomicfu)
+    implementation(libs.plugin.shadow)
+    implementation(libs.plugin.kotlin.jvm)
+    implementation(libs.plugin.kotlin.kapt)
+    implementation(libs.plugin.kotlin.serialization)
+    implementation(libs.plugin.kotlin.atomicfu)
+    implementation(libs.plugin.nyaadanbou.conventions)
 }
 
 dependencies {

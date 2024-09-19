@@ -1,6 +1,6 @@
 package cc.mewcraft.playtime
 
-import cc.mewcraft.core.messenger.redis.RedisProvider
+import cc.mewcraft.messenger.redis.RedisProvider
 import cc.mewcraft.playtime.config.PlayTimeConfig
 import cc.mewcraft.playtime.coroutine.VelocityCoroutineDispatcher
 import cc.mewcraft.playtime.data.PlayTimeDataManager
@@ -27,7 +27,7 @@ import kotlin.io.path.exists
 @Plugin(
     id = "playtime",
     name = "playtime",
-    version = "1.0-SNAPSHOT",
+    version = "1.0.0-SNAPSHOT", // 记得同步更新
     dependencies = [Dependency(id = "kotlin")]
 )
 internal class PlaytimePlugin @Inject constructor(
@@ -41,7 +41,8 @@ internal class PlaytimePlugin @Inject constructor(
     }
 
     private lateinit var task: PlaytimeTickTask
-    private val velocityCoroutineDispatcher by lazy {
+
+    private val coroutineDispatcher by lazy {
         VelocityCoroutineDispatcher(server.pluginManager.ensurePluginContainer(this), server)
     }
 
@@ -54,7 +55,7 @@ internal class PlaytimePlugin @Inject constructor(
     fun onProxyInitialization(event: ProxyInitializeEvent) {
         logger.info("Playtime plugin loaded.")
         instance = this
-        scope = CoroutineScope(exceptionHandler()) + SupervisorJob() + velocityCoroutineDispatcher
+        scope = CoroutineScope(exceptionHandler()) + SupervisorJob() + coroutineDispatcher
 
         if (!dataDirectory.exists()) {
             dataDirectory.createDirectories()

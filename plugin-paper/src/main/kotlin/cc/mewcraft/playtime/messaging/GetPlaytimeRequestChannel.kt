@@ -1,9 +1,9 @@
 package cc.mewcraft.playtime.messaging
 
-import cc.mewcraft.core.messenger.messaging.Messenger
-import cc.mewcraft.core.messenger.messaging.conversation.ConversationChannel
-import cc.mewcraft.core.messenger.messaging.conversation.ConversationReplyListener
-import cc.mewcraft.core.messenger.messaging.extension.getConversationChannel
+import cc.mewcraft.messenger.messaging.Messenger
+import cc.mewcraft.messenger.messaging.conversation.ConversationChannel
+import cc.mewcraft.messenger.messaging.conversation.ConversationReplyListener
+import cc.mewcraft.messenger.messaging.extension.getConversationChannel
 import cc.mewcraft.playtime.data.PlaytimeData
 import kotlinx.coroutines.CompletableDeferred
 import org.slf4j.Logger

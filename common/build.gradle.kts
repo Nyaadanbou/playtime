@@ -2,6 +2,8 @@ plugins {
     id("playtime-conventions")
 }
 
+version = "1.0.0-SNAPSHOT"
+
 dependencies {
     compileOnly(libs.messenger.common)
     compileOnly(libs.gson)

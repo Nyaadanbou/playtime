@@ -10,17 +10,15 @@ plugins {
 val libs = the<org.gradle.accessors.dm.LibrariesForLibs>()
 
 group = "cc.mewcraft.playtime"
-version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
-    maven("https://repo.papermc.io/repository/maven-public/") {
-        name = "papermc-repo"
-    }
     maven("https://oss.sonatype.org/content/groups/public/") {
         name = "sonatype"
     }
-
+    maven("https://repo.papermc.io/repository/maven-public/") {
+        name = "papermc-repo"
+    }
     maven("https://repo.mewcraft.cc/private") {
         credentials {
             username = project.providers.gradleProperty("nyaadanbouUsername").getOrElse("")
@@ -33,9 +31,8 @@ java {
     withSourcesJar()
 }
 
-val targetJavaVersion = 21
 kotlin {
-    jvmToolchain(targetJavaVersion)
+    jvmToolchain(21)
 
     sourceSets {
         val main by getting {

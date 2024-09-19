@@ -1,26 +1,29 @@
+import net.minecrell.pluginyml.paper.PaperPluginDescription.RelativeLoadOrder
+
 plugins {
     id("playtime-conventions")
+    id("nyaadanbou-conventions.copy-jar")
+    alias(libs.plugins.pluginyml.paper)
 }
 
+version = "1.0.0-SNAPSHOT"
+
 dependencies {
+    api(project(":common"))
     compileOnly(libs.paper)
     compileOnly(libs.messenger.paper)
 
-    implementation(libs.mccoroutine.bukkit.api)
-    implementation(libs.mccoroutine.bukkit.core)
-    api(project(":common"))
+    implementation(libs.mccoroutine.bukkit.api) {
+        exclude("org.jetbrains.kotlin")
+    }
+    implementation(libs.mccoroutine.bukkit.core) {
+        exclude("org.jetbrains.kotlin")
+    }
 }
 
-tasks.build {
-    dependsOn("shadowJar")
-}
-
-tasks.processResources {
-    val props = mapOf("version" to version)
-    inputs.properties(props)
-    filteringCharset = "UTF-8"
-    filesMatching("paper-plugin.yml") {
-        expand(props)
+tasks {
+    copyJar {
+        jarName.set("playtime-${project.version}.jar")
     }
 }
 
@@ -35,11 +38,24 @@ publishing {
             }
         }
     }
-
     publications {
         create<MavenPublication>("maven") {
-            artifactId = "playtime-paper"
+            artifactId = "paper"
             from(components["java"])
+        }
+    }
+}
+
+paper {
+    main = "cc.mewcraft.playtime.PlaytimePlugin"
+    name = "Playtime"
+    version = "${project.version}"
+    apiVersion = "1.21"
+    author = "g2213swo"
+    serverDependencies {
+        register("Kotlin") {
+            required = true
+            load = RelativeLoadOrder.BEFORE
         }
     }
 }
