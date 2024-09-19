@@ -2,8 +2,6 @@ plugins {
     `kotlin-dsl`
 }
 
-group = "cc.mewcraft.playtime"
-
 repositories {
     mavenCentral()
     gradlePluginPortal()
