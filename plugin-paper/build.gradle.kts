@@ -23,7 +23,8 @@ dependencies {
 
 tasks {
     copyJar {
-        jarName.set("playtime-${project.version}.jar")
+        environment = "paper"
+        jarFileName = "playtime-${project.version}.jar"
     }
 }
 

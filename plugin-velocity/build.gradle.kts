@@ -17,7 +17,8 @@ dependencies {
 
 tasks {
     copyJar {
-        jarName.set("playtime-${project.version}.jar")
+        environment = "velocity"
+        jarFileName = "playtime-${project.version}.jar"
     }
 }
 
