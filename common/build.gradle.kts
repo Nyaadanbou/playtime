@@ -11,12 +11,10 @@ dependencies {
 
 publishing {
     repositories {
-        maven {
-            name = "nyaadanbou"
-            url = uri("https://repo.mewcraft.cc/private")
-            credentials(PasswordCredentials::class)
-            authentication {
-                create<BasicAuthentication>("basic")
+        maven("https://repo.mewcraft.cc/private") {
+            credentials {
+                username = providers.gradleProperty("nyaadanbou.mavenUsername").orNull
+                password = providers.gradleProperty("nyaadanbou.mavenPassword").orNull
             }
         }
     }
