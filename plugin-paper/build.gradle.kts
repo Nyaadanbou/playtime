@@ -1,4 +1,4 @@
-import net.minecrell.pluginyml.paper.PaperPluginDescription.RelativeLoadOrder
+import net.minecrell.pluginyml.paper.PaperPluginDescription
 
 plugins {
     id("playtime-conventions")
@@ -52,9 +52,9 @@ paper {
     apiVersion = "1.21"
     author = "g2213swo"
     serverDependencies {
-        register("Kotlin") {
+        register("Messenger") {
             required = true
-            load = RelativeLoadOrder.BEFORE
+            load = PaperPluginDescription.RelativeLoadOrder.OMIT
         }
     }
 }
