@@ -6,6 +6,7 @@ import cc.mewcraft.playtime.coroutine.VelocityCoroutineDispatcher
 import cc.mewcraft.playtime.data.PlayTimeDataManager
 import cc.mewcraft.playtime.event.PlayTimeReloadEvent
 import cc.mewcraft.playtime.messaging.GetPlaytimeResponseChannel
+import cc.mewcraft.playtime.messaging.SetPlaytimeResponseChannel
 import cc.mewcraft.playtime.storage.PlayTimeDatabase
 import cc.mewcraft.playtime.task.PlaytimeTickTask
 import com.google.inject.Inject
@@ -40,13 +41,15 @@ internal class PlaytimePlugin @Inject constructor(
         internal var instance: PlaytimePlugin? = null
     }
 
+    private lateinit var playtime: Playtime
     private lateinit var task: PlaytimeTickTask
 
     private val coroutineDispatcher by lazy {
         VelocityCoroutineDispatcher(server.pluginManager.ensurePluginContainer(this), server)
     }
 
-    private lateinit var channel: GetPlaytimeResponseChannel
+    private lateinit var getPlaytimeChannel: GetPlaytimeResponseChannel
+    private lateinit var setPlaytimeChannel: SetPlaytimeResponseChannel
 
     lateinit var scope: CoroutineScope
         private set
@@ -74,18 +77,24 @@ internal class PlaytimePlugin @Inject constructor(
         task = PlaytimeTickTask(this, dataManager)
         task.start()
 
-        channel = GetPlaytimeResponseChannel(RedisProvider.getRedis(), dataManager)
+        getPlaytimeChannel = GetPlaytimeResponseChannel(RedisProvider.getRedis(), dataManager)
+        setPlaytimeChannel = SetPlaytimeResponseChannel(RedisProvider.getRedis(), dataManager)
+
+        playtime = PlaytimeImpl(dataManager)
+        PlaytimeProvider.register(playtime)
     }
 
     @Subscribe
     fun onProxyShutdown(event: ProxyShutdownEvent) {
+        PlaytimeProvider.unregister()
         instance = null
         dispose()
         logger.info("Playtime plugin unloaded.")
     }
 
     private fun dispose() {
-        channel.close()
+        getPlaytimeChannel.close()
+        setPlaytimeChannel.close()
         scope.coroutineContext.cancelChildren()
         scope.cancel()
     }

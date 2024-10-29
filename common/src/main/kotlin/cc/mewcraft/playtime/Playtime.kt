@@ -15,4 +15,12 @@ interface Playtime {
      * @param uuid 玩家的 UUID.
      */
     suspend fun getPlaytime(uuid: UUID): PlaytimeData?
+
+    /**
+     * 设置玩家的游戏时间数据.
+     *
+     * @param uuid 玩家的 UUID.
+     * @param playtimeData 要设置的玩家游戏时间数据.
+     */
+    suspend fun setPlaytime(uuid: UUID, playtimeData: PlaytimeData)
 }

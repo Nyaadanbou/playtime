@@ -3,6 +3,7 @@ package cc.mewcraft.playtime
 import cc.mewcraft.messenger.redis.RedisProvider
 import cc.mewcraft.playtime.data.PlaytimeData
 import cc.mewcraft.playtime.messaging.GetPlaytimeRequestChannel
+import cc.mewcraft.playtime.messaging.SetPlaytimeRequestChannel
 import com.github.shynixn.mccoroutine.bukkit.SuspendingJavaPlugin
 import com.github.shynixn.mccoroutine.bukkit.scope
 import io.papermc.paper.command.brigadier.Commands
@@ -17,7 +18,9 @@ import kotlin.jvm.optionals.getOrNull
 @Suppress("UnstableApiUsage")
 internal class PlaytimePlugin : SuspendingJavaPlugin() {
     private lateinit var playtime: Playtime
-    private lateinit var channel: GetPlaytimeRequestChannel
+
+    private lateinit var getPlaytimeChannel: GetPlaytimeRequestChannel
+    private lateinit var setPlaytimeChannel: SetPlaytimeRequestChannel
 
     private fun registerCommand() {
         lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
@@ -28,7 +31,7 @@ internal class PlaytimePlugin : SuspendingJavaPlugin() {
                         val sender = context.source.sender
                         val uuid = sender.uniqueId ?: return@executes 0
                         scope.launch(Dispatchers.IO) {
-                            val playtime = channel.requestPlaytime(uuid)
+                            val playtime = getPlaytimeChannel.requestPlaytime(uuid)
                             sender.sendMessage("Requested $playtime for $uuid")
                         }
                         1
@@ -42,7 +45,8 @@ internal class PlaytimePlugin : SuspendingJavaPlugin() {
         get() = pointers().get(Identity.UUID).getOrNull()
 
     override fun onEnable() {
-        channel = GetPlaytimeRequestChannel(componentLogger, RedisProvider.getRedis())
+        getPlaytimeChannel = GetPlaytimeRequestChannel(componentLogger, RedisProvider.getRedis())
+        setPlaytimeChannel = SetPlaytimeRequestChannel(componentLogger, RedisProvider.getRedis())
         playtime = PlaytimeImpl()
         PlaytimeProvider.register(playtime)
         registerCommand()
@@ -50,12 +54,17 @@ internal class PlaytimePlugin : SuspendingJavaPlugin() {
 
     override fun onDisable() {
         PlaytimeProvider.unregister()
-        channel.close()
+        getPlaytimeChannel.close()
+        setPlaytimeChannel.close()
     }
 
     private inner class PlaytimeImpl : Playtime {
         override suspend fun getPlaytime(uuid: UUID): PlaytimeData? {
-            return channel.requestPlaytime(uuid)
+            return getPlaytimeChannel.requestPlaytime(uuid)
+        }
+
+        override suspend fun setPlaytime(uuid: UUID, playtimeData: PlaytimeData) {
+            setPlaytimeChannel.requestSetPlaytime(uuid, playtimeData)
         }
     }
 }

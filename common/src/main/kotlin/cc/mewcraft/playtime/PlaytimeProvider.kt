@@ -1,5 +1,7 @@
 package cc.mewcraft.playtime
 
+import org.jetbrains.annotations.ApiStatus
+
 object PlaytimeProvider {
     private var instance: Playtime? = null
 
@@ -13,11 +15,13 @@ object PlaytimeProvider {
         return instance ?: throw IllegalStateException("Playtime is not initialized")
     }
 
-    internal fun register(instance: Playtime) {
-        this.instance = instance
+    @ApiStatus.Internal
+    fun register(instance: Playtime) {
+        PlaytimeProvider.instance = instance
     }
 
-    internal fun unregister() {
-        this.instance = null
+    @ApiStatus.Internal
+    fun unregister() {
+        instance = null
     }
 }
