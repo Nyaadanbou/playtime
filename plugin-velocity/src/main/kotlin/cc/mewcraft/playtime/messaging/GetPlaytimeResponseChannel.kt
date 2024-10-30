@@ -20,8 +20,4 @@ internal class GetPlaytimeResponseChannel(
             ).toReply()
         }
     }
-
-    fun close() {
-        channel.close()
-    }
 }

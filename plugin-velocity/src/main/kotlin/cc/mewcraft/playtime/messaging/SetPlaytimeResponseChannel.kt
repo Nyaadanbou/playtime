@@ -18,8 +18,4 @@ internal class SetPlaytimeResponseChannel(
             SetPlaytimeResponse(message.conversationId).toReply()
         }
     }
-
-    fun close() {
-        channel.close()
-    }
 }

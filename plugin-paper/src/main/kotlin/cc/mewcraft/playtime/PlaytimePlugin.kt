@@ -31,7 +31,7 @@ internal class PlaytimePlugin : SuspendingJavaPlugin() {
                         val sender = context.source.sender
                         val uuid = sender.uniqueId ?: return@executes 0
                         scope.launch(Dispatchers.IO) {
-                            val playtime = getPlaytimeChannel.requestPlaytime(uuid)
+                            val playtime = playtime.getPlaytime(uuid)
                             sender.sendMessage("Requested $playtime for $uuid")
                         }
                         1
@@ -54,8 +54,6 @@ internal class PlaytimePlugin : SuspendingJavaPlugin() {
 
     override fun onDisable() {
         PlaytimeProvider.unregister()
-        getPlaytimeChannel.close()
-        setPlaytimeChannel.close()
     }
 
     private inner class PlaytimeImpl : Playtime {

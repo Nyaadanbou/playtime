@@ -93,8 +93,6 @@ internal class PlaytimePlugin @Inject constructor(
     }
 
     private fun dispose() {
-        getPlaytimeChannel.close()
-        setPlaytimeChannel.close()
         scope.coroutineContext.cancelChildren()
         scope.cancel()
     }

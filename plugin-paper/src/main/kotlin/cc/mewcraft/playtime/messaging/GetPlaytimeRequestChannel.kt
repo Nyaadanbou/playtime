@@ -30,11 +30,8 @@ internal class GetPlaytimeRequestChannel(
                 logger.warn("GetPlaytimeRequestChannel: requestPlaytime: Timeout")
                 response.complete(null)
             }
+            .send()
 
         return response.await()
-    }
-
-    fun close() {
-        channel.close()
     }
 }

@@ -23,8 +23,4 @@ class SetPlaytimeRequestChannel(
             .onTimeout { logger.warn("SetPlaytimeRequestChannel: requestPlaytime: Timeout") }
             .sendAndAwait()
     }
-
-    fun close() {
-        channel.close()
-    }
 }
