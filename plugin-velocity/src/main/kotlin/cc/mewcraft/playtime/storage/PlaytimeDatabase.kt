@@ -1,8 +1,8 @@
 package cc.mewcraft.playtime.storage
 
-import cc.mewcraft.playtime.config.PlayTimeConfig
+import cc.mewcraft.playtime.config.PlaytimeConfig
 import cc.mewcraft.playtime.data.PlaytimeData
-import cc.mewcraft.playtime.sql.PlayTimeSql
+import cc.mewcraft.playtime.sql.PlaytimeSql
 import cc.mewcraft.playtime.sql.Sql
 import cc.mewcraft.playtime.util.use
 import kotlinx.coroutines.Dispatchers
@@ -13,10 +13,10 @@ import java.util.*
 private const val UUID_COLUMN = "uuid"
 private const val PLAY_TIME_COLUMN = "play_time"
 
-internal interface PlayTimeDatabase {
+internal interface PlaytimeDatabase {
     companion object {
-        fun mariadb(config: PlayTimeConfig): PlayTimeDatabase {
-            return MariadbPlayTimeDatabase(config)
+        fun mariadb(config: PlaytimeConfig): PlaytimeDatabase {
+            return MariadbPlaytimeDatabase(config)
         }
     }
 
@@ -29,10 +29,10 @@ internal interface PlayTimeDatabase {
     suspend fun close()
 }
 
-private class MariadbPlayTimeDatabase(
-    config: PlayTimeConfig,
-) : PlayTimeDatabase {
-    private val sql: Sql = PlayTimeSql(config.databaseCredentials)
+private class MariadbPlaytimeDatabase(
+    config: PlaytimeConfig,
+) : PlaytimeDatabase {
+    private val sql: Sql = PlaytimeSql(config.databaseCredentials)
 
     private val tablePrefix = config.databaseCredentials.tablePrefix
 

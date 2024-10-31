@@ -1,11 +1,11 @@
 package cc.mewcraft.playtime
 
-import cc.mewcraft.playtime.data.PlayTimeDataManager
+import cc.mewcraft.playtime.data.PlaytimeDataManager
 import cc.mewcraft.playtime.data.PlaytimeData
 import java.util.*
 
 class PlaytimeImpl(
-    private val dataManager: PlayTimeDataManager
+    private val dataManager: PlaytimeDataManager
 ) : Playtime {
     override suspend fun getPlaytime(uuid: UUID): PlaytimeData {
         return dataManager.getPlayTime(uuid)

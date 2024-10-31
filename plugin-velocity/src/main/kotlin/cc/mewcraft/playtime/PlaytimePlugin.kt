@@ -1,13 +1,13 @@
 package cc.mewcraft.playtime
 
 import cc.mewcraft.messenger.redis.RedisProvider
-import cc.mewcraft.playtime.config.PlayTimeConfig
+import cc.mewcraft.playtime.config.PlaytimeConfig
 import cc.mewcraft.playtime.coroutine.VelocityCoroutineDispatcher
-import cc.mewcraft.playtime.data.PlayTimeDataManager
-import cc.mewcraft.playtime.event.PlayTimeReloadEvent
+import cc.mewcraft.playtime.data.PlaytimeDataManager
+import cc.mewcraft.playtime.event.PlaytimeReloadEvent
 import cc.mewcraft.playtime.messaging.GetPlaytimeResponseChannel
 import cc.mewcraft.playtime.messaging.SetPlaytimeResponseChannel
-import cc.mewcraft.playtime.storage.PlayTimeDatabase
+import cc.mewcraft.playtime.storage.PlaytimeDatabase
 import cc.mewcraft.playtime.task.PlaytimeTickTask
 import com.google.inject.Inject
 import com.velocitypowered.api.event.EventHandler
@@ -64,15 +64,15 @@ internal class PlaytimePlugin @Inject constructor(
             dataDirectory.createDirectories()
         }
 
-        val config = PlayTimeConfig(dataDirectory)
+        val config = PlaytimeConfig(dataDirectory)
         config.load()
 
-        val database = PlayTimeDatabase.mariadb(config)
+        val database = PlaytimeDatabase.mariadb(config)
         scope.launch {
             database.load()
         }
 
-        val dataManager = PlayTimeDataManager.create(database, logger)
+        val dataManager = PlaytimeDataManager.create(database, logger)
 
         task = PlaytimeTickTask(this, dataManager)
         task.start()
@@ -98,7 +98,7 @@ internal class PlaytimePlugin @Inject constructor(
     }
 
     fun reload() {
-        server.eventManager.fire(PlayTimeReloadEvent())
+        server.eventManager.fire(PlaytimeReloadEvent())
     }
 
     fun <T> listen(eventType: Class<T>?, order: PostOrder?, action: EventHandler<T>?) {

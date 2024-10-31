@@ -1,6 +1,6 @@
 package cc.mewcraft.playtime.config
 
-import cc.mewcraft.playtime.event.PlayTimeReloadEvent
+import cc.mewcraft.playtime.event.PlaytimeReloadEvent
 import cc.mewcraft.playtime.plugin
 import cc.mewcraft.playtime.sql.DatabaseCredentials
 import cc.mewcraft.playtime.util.listen
@@ -11,20 +11,18 @@ import org.spongepowered.configurate.yaml.NodeStyle
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader
 import java.lang.reflect.Type
 import java.nio.file.Path
-import kotlin.io.path.createDirectory
-import kotlin.io.path.createFile
 import kotlin.io.path.exists
 import kotlin.io.path.outputStream
 
 private const val CONFIG_FILE_NAME = "config.yml"
 
-internal class PlayTimeConfig(
+internal class PlaytimeConfig(
     dataDir: Path
 ) {
     private val path: Path = dataDir.resolve(CONFIG_FILE_NAME)
 
     init {
-        plugin.listen<PlayTimeReloadEvent> { load() }
+        plugin.listen<PlaytimeReloadEvent> { load() }
     }
 
     fun load() {

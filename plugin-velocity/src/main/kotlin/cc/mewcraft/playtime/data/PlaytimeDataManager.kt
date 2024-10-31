@@ -1,7 +1,7 @@
 package cc.mewcraft.playtime.data
 
 import cc.mewcraft.playtime.plugin
-import cc.mewcraft.playtime.storage.PlayTimeDatabase
+import cc.mewcraft.playtime.storage.PlaytimeDatabase
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.benmanes.caffeine.cache.LoadingCache
 import kotlinx.coroutines.Deferred
@@ -10,10 +10,10 @@ import org.slf4j.Logger
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-interface PlayTimeDataManager {
+interface PlaytimeDataManager {
     companion object {
-        internal fun create(database: PlayTimeDatabase, logger: Logger): PlayTimeDataManager {
-            return PlayTimeDataManagerImpl(database, logger)
+        internal fun create(database: PlaytimeDatabase, logger: Logger): PlaytimeDataManager {
+            return PlaytimeDataManagerImpl(database, logger)
         }
     }
 
@@ -27,10 +27,10 @@ interface PlayTimeDataManager {
     }
 }
 
-private class PlayTimeDataManagerImpl(
-    private val database: PlayTimeDatabase,
+private class PlaytimeDataManagerImpl(
+    private val database: PlaytimeDatabase,
     private val logger: Logger
-) : PlayTimeDataManager {
+) : PlaytimeDataManager {
     private val dataCache: LoadingCache<UUID, Deferred<PlaytimeData>> = Caffeine.newBuilder()
         .expireAfterAccess(3, TimeUnit.MINUTES)
         .build { uniqueId ->

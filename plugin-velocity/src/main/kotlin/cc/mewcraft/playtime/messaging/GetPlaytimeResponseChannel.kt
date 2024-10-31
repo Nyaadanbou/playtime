@@ -4,11 +4,11 @@ import cc.mewcraft.messenger.messaging.Messenger
 import cc.mewcraft.messenger.messaging.conversation.ConversationChannel
 import cc.mewcraft.messenger.messaging.conversation.toReply
 import cc.mewcraft.messenger.messaging.extension.getConversationChannel
-import cc.mewcraft.playtime.data.PlayTimeDataManager
+import cc.mewcraft.playtime.data.PlaytimeDataManager
 
 internal class GetPlaytimeResponseChannel(
     messenger: Messenger,
-    manager: PlayTimeDataManager,
+    manager: PlaytimeDataManager,
 ) {
     private val channel: ConversationChannel<GetPlaytimeRequest, GetPlaytimeResponse> = messenger.getConversationChannel(PlaytimeConstants.GET_PLAYTIME_CHANNEL_ID)
 
