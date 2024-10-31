@@ -15,6 +15,11 @@ internal class PlaytimeTickTask(
     private val plugin: PlaytimePlugin,
     private val manager: PlaytimeDataManager,
 ) {
+    companion object {
+        private val ADD_TIME_DELAY_DURATION = 1.toDuration(DurationUnit.SECONDS)
+        private val SAVE_DELAY_DURATION = 1.toDuration(DurationUnit.MINUTES)
+    }
+
     private val server = plugin.server
 
     private var scheduledTask: Job? = null
@@ -23,16 +28,15 @@ internal class PlaytimeTickTask(
     private val playTimeData: ConcurrentHashMap<UUID, Long> = ConcurrentHashMap()
 
     fun start() {
-        val delayDuration = 1.toDuration(DurationUnit.SECONDS)
         scheduledTask = plugin.scope.launch {
             while (true) {
                 val players = server.allPlayers
                 for (player in players) {
                     val uuid = player.uniqueId
                     val time = playTimeData.getOrDefault(uuid, 0)
-                    playTimeData[uuid] = time + delayDuration.inWholeMilliseconds
+                    playTimeData[uuid] = time + ADD_TIME_DELAY_DURATION.inWholeMilliseconds
                 }
-                delay(delayDuration)
+                delay(ADD_TIME_DELAY_DURATION)
             }
         }
 
@@ -42,7 +46,7 @@ internal class PlaytimeTickTask(
                     manager.addPlayTime(playTimeDatum.key, PlaytimeData(playTimeDatum.value))
                 }
                 playTimeData.clear()
-                delay(1.toDuration(DurationUnit.MINUTES))
+                delay(SAVE_DELAY_DURATION)
             }
         }
     }
