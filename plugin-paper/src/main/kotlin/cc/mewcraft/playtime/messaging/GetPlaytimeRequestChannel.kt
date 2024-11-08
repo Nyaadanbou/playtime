@@ -1,9 +1,9 @@
 package cc.mewcraft.playtime.messaging
 
+import cc.mewcraft.messenger.extension.getConversationChannel
 import cc.mewcraft.messenger.messaging.Messenger
 import cc.mewcraft.messenger.messaging.conversation.ConversationChannel
 import cc.mewcraft.messenger.messaging.conversation.ConversationReplyListener
-import cc.mewcraft.messenger.messaging.extension.getConversationChannel
 import cc.mewcraft.playtime.data.PlaytimeData
 import kotlinx.coroutines.CompletableDeferred
 import org.slf4j.Logger
@@ -12,8 +12,8 @@ import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 internal class GetPlaytimeRequestChannel(
+    private val messenger: Messenger,
     private val logger: Logger,
-    messenger: Messenger,
 ) {
     private val channel: ConversationChannel<GetPlaytimeRequest, GetPlaytimeResponse> = messenger.getConversationChannel(PlaytimeConstants.GET_PLAYTIME_CHANNEL_ID)
 
@@ -27,7 +27,7 @@ internal class GetPlaytimeRequestChannel(
                 ConversationReplyListener.RegistrationAction.STOP_LISTENING
             }
             .onTimeout {
-                logger.warn("GetPlaytimeRequestChannel: requestPlaytime: Timeout")
+                logger.warn("GetPlaytimeRequestChannel: requestPlaytime: timeout")
                 response.complete(null)
             }
             .send()
