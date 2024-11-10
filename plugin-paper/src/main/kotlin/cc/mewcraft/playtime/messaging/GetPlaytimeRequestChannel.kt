@@ -1,37 +1,26 @@
 package cc.mewcraft.playtime.messaging
 
-import cc.mewcraft.messenger.extension.getConversationChannel
+import cc.mewcraft.messenger.extension.getReqRespChannel
 import cc.mewcraft.messenger.messaging.Messenger
-import cc.mewcraft.messenger.messaging.conversation.ConversationChannel
-import cc.mewcraft.messenger.messaging.conversation.ConversationReplyListener
+import cc.mewcraft.messenger.messaging.reqresp.ReqRespChannel
 import cc.mewcraft.playtime.data.PlaytimeData
-import kotlinx.coroutines.CompletableDeferred
 import org.slf4j.Logger
 import java.util.UUID
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 
 internal class GetPlaytimeRequestChannel(
     private val messenger: Messenger,
     private val logger: Logger,
 ) {
-    private val channel: ConversationChannel<GetPlaytimeRequest, GetPlaytimeResponse> = messenger.getConversationChannel(PlaytimeConstants.GET_PLAYTIME_CHANNEL_ID)
+    private val channel: ReqRespChannel<GetPlaytimeRequest, GetPlaytimeResponse> = messenger.getReqRespChannel(PlaytimeConstants.GET_PLAYTIME_CHANNEL_ID)
 
-    suspend fun requestPlaytime(playerUniqueId: UUID): PlaytimeData? {
+    suspend fun getPlaytime(playerUniqueId: UUID): PlaytimeData? {
         val request = GetPlaytimeRequest(playerUniqueId)
-        val response = CompletableDeferred<PlaytimeData?>()
-
-        channel.buildMessage(request, 3.toDuration(DurationUnit.SECONDS))
-            .onReply { reply ->
-                response.complete(reply.data)
-                ConversationReplyListener.RegistrationAction.STOP_LISTENING
-            }
-            .onTimeout {
-                logger.warn("GetPlaytimeRequestChannel: requestPlaytime: timeout")
-                response.complete(null)
-            }
-            .send()
-
-        return response.await()
+        val response = try {
+            channel.request(request).await()
+        } catch (e: Exception) {
+            logger.warn("Failed to get playtime for player $playerUniqueId", e)
+            null
+        }
+        return response?.data
     }
 }

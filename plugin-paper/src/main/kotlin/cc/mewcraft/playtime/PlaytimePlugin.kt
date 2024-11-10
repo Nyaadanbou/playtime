@@ -55,10 +55,10 @@ internal class PlaytimePlugin : SuspendingJavaPlugin(), Playtime {
     }
 
     override suspend fun getPlaytime(uuid: UUID): PlaytimeData? {
-        return getPlaytimeChannel.requestPlaytime(uuid)
+        return getPlaytimeChannel.getPlaytime(uuid)
     }
 
     override suspend fun setPlaytime(uuid: UUID, playtimeData: PlaytimeData) {
-        setPlaytimeChannel.requestSetPlaytime(uuid, playtimeData)
+        setPlaytimeChannel.setPlaytime(uuid, playtimeData)
     }
 }
