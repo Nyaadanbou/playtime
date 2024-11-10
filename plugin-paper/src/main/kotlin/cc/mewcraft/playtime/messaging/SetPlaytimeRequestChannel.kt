@@ -7,7 +7,7 @@ import cc.mewcraft.playtime.data.PlaytimeData
 import org.slf4j.Logger
 import java.util.UUID
 
-class SetPlaytimeRequestChannel(
+internal class SetPlaytimeRequestChannel(
     private val messenger: Messenger,
     private val logger: Logger,
 ) {

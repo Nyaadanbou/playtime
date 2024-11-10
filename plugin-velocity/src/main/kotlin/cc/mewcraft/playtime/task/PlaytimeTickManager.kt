@@ -22,9 +22,9 @@ internal class PlaytimeTickManager(
     private val server = plugin.server
 
     private val playTimeData: ConcurrentHashMap<UUID, Long> = ConcurrentHashMap()
-    private val coroutineScope = CoroutineScope(SupervisorJob() + createVirtualThreadExecutor().asCoroutineDispatcher())
+    private val coroutineScope = CoroutineScope(SupervisorJob() + createExecutor().asCoroutineDispatcher())
 
-    private fun createVirtualThreadExecutor(): ExecutorService {
+    private fun createExecutor(): ExecutorService {
         return Executors.newCachedThreadPool(
             ThreadFactoryBuilder().setNameFormat("playtime-tick-%d").setThreadFactory(Thread.ofVirtual().factory()).build()
         )
