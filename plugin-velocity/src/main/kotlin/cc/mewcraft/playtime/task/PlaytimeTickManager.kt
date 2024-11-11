@@ -1,60 +1,55 @@
 package cc.mewcraft.playtime.task
 
-import cc.mewcraft.playtime.PlaytimePlugin
 import cc.mewcraft.playtime.data.PlaytimeData
 import cc.mewcraft.playtime.data.PlaytimeDataManager
-import com.google.common.util.concurrent.ThreadFactoryBuilder
+import com.velocitypowered.api.proxy.ProxyServer
 import kotlinx.coroutines.*
 import java.util.UUID
-import java.util.concurrent.*
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 internal class PlaytimeTickManager(
-    private val plugin: PlaytimePlugin,
+    scope: CoroutineScope,
+    private val server: ProxyServer,
     private val manager: PlaytimeDataManager,
 ) {
     companion object {
         private val ADD_TIME_DELAY = 1.toDuration(DurationUnit.SECONDS)
-        private val SAVE_DELAY = 1.toDuration(DurationUnit.MINUTES)
+        private val SAVE_DATA_DELAY = 1.toDuration(DurationUnit.MINUTES)
     }
 
-    private val server = plugin.server
+    private val playtimeDataMap: ConcurrentHashMap<UUID, Long> = ConcurrentHashMap()
 
-    private val playTimeData: ConcurrentHashMap<UUID, Long> = ConcurrentHashMap()
-    private val coroutineScope = CoroutineScope(SupervisorJob() + createExecutor().asCoroutineDispatcher())
-
-    private fun createExecutor(): ExecutorService {
-        return Executors.newCachedThreadPool(
-            ThreadFactoryBuilder().setNameFormat("playtime-tick-%d").setThreadFactory(Thread.ofVirtual().factory()).build()
-        )
-    }
+    // 构建一个专门的 coroutine scope 执行无期限的 tick 逻辑
+    private val tickScope = scope + CoroutineName("playtime-tick")
 
     fun start() {
-        coroutineScope.launch {
-            while (true) {
+        tickScope.launch {
+            while (isActive) {
                 val players = server.allPlayers
                 for (player in players) {
                     val uuid = player.uniqueId
-                    val time = playTimeData.getOrDefault(uuid, 0)
-                    playTimeData[uuid] = time + ADD_TIME_DELAY.inWholeMilliseconds
+                    val time = playtimeDataMap.getOrDefault(uuid, 0)
+                    playtimeDataMap[uuid] = time + ADD_TIME_DELAY.inWholeMilliseconds
                 }
+
                 delay(ADD_TIME_DELAY)
             }
         }
 
-        coroutineScope.launch {
-            while (true) {
-                for (playTimeDatum in playTimeData) {
-                    manager.addPlayTime(playTimeDatum.key, PlaytimeData(playTimeDatum.value))
+        tickScope.launch {
+            while (isActive) {
+                for (data in playtimeDataMap) {
+                    manager.editPlaytime(data.key) { this + PlaytimeData(data.value) }
                 }
-                playTimeData.clear()
-                delay(SAVE_DELAY)
+                playtimeDataMap.clear()
+                delay(SAVE_DATA_DELAY)
             }
         }
     }
 
     fun stop() {
-        coroutineScope.cancel()
+        tickScope.cancel("Shutting down")
     }
 }

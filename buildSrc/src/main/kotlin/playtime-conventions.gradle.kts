@@ -4,7 +4,6 @@ plugins {
     kotlin("plugin.serialization")
     kotlin("plugin.atomicfu")
     id("com.gradleup.shadow")
-    `maven-publish`
 }
 
 val libs = the<org.gradle.accessors.dm.LibrariesForLibs>()

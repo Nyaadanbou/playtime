@@ -13,12 +13,12 @@ internal class GetPlaytimeRequestChannel(
 ) {
     private val channel: ReqRespChannel<GetPlaytimeRequest, GetPlaytimeResponse> = messenger.getReqRespChannel(PlaytimeConstants.GET_PLAYTIME_CHANNEL_ID)
 
-    suspend fun getPlaytime(playerUniqueId: UUID): PlaytimeData? {
-        val request = GetPlaytimeRequest(playerUniqueId)
+    suspend fun getPlaytime(playerUuid: UUID): PlaytimeData? {
+        val request = GetPlaytimeRequest(playerUuid)
         val response = try {
             channel.request(request).await()
         } catch (e: Exception) {
-            logger.warn("Failed to get playtime for player $playerUniqueId", e)
+            logger.warn("Failed to get playtime for player $playerUuid", e)
             null
         }
         return response?.data

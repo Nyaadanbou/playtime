@@ -1,8 +1,8 @@
 import net.minecrell.pluginyml.paper.PaperPluginDescription
 
 plugins {
-    id("playtime-conventions")
-    id("nyaadanbou-conventions.copy-jar")
+    `playtime-conventions`
+    `nyaadanbou-conventions`.`copy-jar`
     alias(libs.plugins.pluginyml.paper)
 }
 
@@ -25,23 +25,6 @@ tasks {
     copyJar {
         environment = "paper"
         jarFileName = "playtime-${project.version}.jar"
-    }
-}
-
-publishing {
-    repositories {
-        maven("https://repo.mewcraft.cc/private") {
-            credentials {
-                username = providers.gradleProperty("nyaadanbou.mavenUsername").orNull
-                password = providers.gradleProperty("nyaadanbou.mavenPassword").orNull
-            }
-        }
-    }
-    publications {
-        create<MavenPublication>("maven") {
-            artifactId = "paper"
-            from(components["java"])
-        }
     }
 }
 
