@@ -1,3 +1,7 @@
+@file:Suppress(
+    "UnstableApiUsage"
+)
+
 package cc.mewcraft.playtime
 
 import cc.mewcraft.messenger.redis.RedisProvider
@@ -12,8 +16,9 @@ import net.kyori.adventure.identity.Identity
 import org.bukkit.command.CommandSender
 import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
-@Suppress("UnstableApiUsage")
 internal class PlaytimePlugin : SuspendingJavaPlugin(), Playtime {
     private lateinit var getPlaytimeChannel: GetPlaytimeRequestChannel
     private lateinit var setPlaytimeChannel: SetPlaytimeRequestChannel
@@ -27,8 +32,9 @@ internal class PlaytimePlugin : SuspendingJavaPlugin(), Playtime {
                         val sender = context.source.sender
                         val uuid = sender.uniqueId ?: return@executes 0
                         scope.launch(asyncDispatcher) {
-                            val playtime = getPlaytime(uuid)
-                            sender.sendMessage("Requested $playtime for $uuid")
+                            val playtimeData = getPlaytime(uuid)?.playTime ?: 0
+                            val playtimeString = playtimeData.toDuration(DurationUnit.MILLISECONDS)
+                            sender.sendMessage("在线时间: $playtimeString")
                         }
                         1
                     }
@@ -60,5 +66,11 @@ internal class PlaytimePlugin : SuspendingJavaPlugin(), Playtime {
 
     override suspend fun setPlaytime(uuid: UUID, playtimeData: PlaytimeData) {
         setPlaytimeChannel.setPlaytime(uuid, playtimeData)
+    }
+
+    override suspend fun editPlaytime(uuid: UUID, block: PlaytimeData.() -> PlaytimeData) {
+        val oldData = getPlaytime(uuid) ?: PlaytimeData()
+        val newData = oldData.block()
+        setPlaytime(uuid, newData)
     }
 }

@@ -25,4 +25,12 @@ interface Playtime {
      * @param playtimeData 新的游戏时间数据
      */
     suspend fun setPlaytime(uuid: UUID, playtimeData: PlaytimeData)
+
+    /**
+     * 修改玩家的游戏时间数据.
+     *
+     * @param uuid 玩家的 UUID
+     * @param block 用于修改游戏时间数据的函数
+     */
+    suspend fun editPlaytime(uuid: UUID, block: PlaytimeData.() -> PlaytimeData)
 }

@@ -120,6 +120,10 @@ internal class PlaytimePlugin
         dataManager.setPlayTime(uuid, playtimeData)
     }
 
+    override suspend fun editPlaytime(uuid: UUID, block: PlaytimeData.() -> PlaytimeData) {
+        dataManager.editPlaytime(uuid, block)
+    }
+
     private fun createExecutor(): Executor {
         return Executors.newCachedThreadPool(
             ThreadFactoryBuilder().setNameFormat("playtime-executor-%d").setThreadFactory(Thread.ofVirtual().factory()).build()

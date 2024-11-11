@@ -16,10 +16,10 @@ internal class PlaytimeTickManager(
 ) {
     companion object {
         private val ADD_TIME_DELAY = 1.toDuration(DurationUnit.SECONDS)
-        private val SAVE_DELAY = 1.toDuration(DurationUnit.MINUTES)
+        private val SAVE_DATA_DELAY = 1.toDuration(DurationUnit.MINUTES)
     }
 
-    private val playTimeData: ConcurrentHashMap<UUID, Long> = ConcurrentHashMap()
+    private val playtimeDataMap: ConcurrentHashMap<UUID, Long> = ConcurrentHashMap()
 
     // 构建一个专门的 coroutine scope 执行无期限的 tick 逻辑
     private val tickScope = scope + CoroutineName("playtime-tick")
@@ -30,20 +30,21 @@ internal class PlaytimeTickManager(
                 val players = server.allPlayers
                 for (player in players) {
                     val uuid = player.uniqueId
-                    val time = playTimeData.getOrDefault(uuid, 0)
-                    playTimeData[uuid] = time + ADD_TIME_DELAY.inWholeMilliseconds
+                    val time = playtimeDataMap.getOrDefault(uuid, 0)
+                    playtimeDataMap[uuid] = time + ADD_TIME_DELAY.inWholeMilliseconds
                 }
+
                 delay(ADD_TIME_DELAY)
             }
         }
 
         tickScope.launch {
             while (isActive) {
-                for (playTimeDatum in playTimeData) {
-                    manager.addPlayTime(playTimeDatum.key, PlaytimeData(playTimeDatum.value))
+                for (data in playtimeDataMap) {
+                    manager.editPlaytime(data.key) { this + PlaytimeData(data.value) }
                 }
-                playTimeData.clear()
-                delay(SAVE_DELAY)
+                playtimeDataMap.clear()
+                delay(SAVE_DATA_DELAY)
             }
         }
     }

@@ -21,9 +21,10 @@ internal interface PlaytimeDataManager {
 
     suspend fun setPlayTime(uniqueId: UUID, timeData: PlaytimeData)
 
-    suspend fun addPlayTime(uniqueId: UUID, timeData: PlaytimeData) {
-        val currentData = getPlayTime(uniqueId)
-        setPlayTime(uniqueId, currentData + timeData)
+    suspend fun editPlaytime(uuid: UUID, block: PlaytimeData.() -> PlaytimeData) {
+        val oldData = getPlayTime(uuid)
+        val newData = oldData.block()
+        setPlayTime(uuid, newData)
     }
 
     suspend fun shutdown()
