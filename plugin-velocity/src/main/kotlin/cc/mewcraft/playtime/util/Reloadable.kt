@@ -7,7 +7,9 @@ import kotlin.reflect.KProperty
 
 internal fun <T> reloadable(loader: () -> T) = Reloadable(loader)
 
-internal class Reloadable<T>(private val loader: () -> T) : ReadOnlyProperty<Any?, T> {
+internal class Reloadable<T>(
+    private val loader: () -> T,
+) : ReadOnlyProperty<Any?, T> {
     private var value: T? = null
 
     init {

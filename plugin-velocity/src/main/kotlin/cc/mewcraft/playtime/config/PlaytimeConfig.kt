@@ -11,13 +11,12 @@ import org.spongepowered.configurate.yaml.NodeStyle
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader
 import java.lang.reflect.Type
 import java.nio.file.Path
-import kotlin.io.path.exists
-import kotlin.io.path.outputStream
+import kotlin.io.path.*
 
 private const val CONFIG_FILE_NAME = "config.yml"
 
 internal class PlaytimeConfig(
-    dataDir: Path
+    dataDir: Path,
 ) {
     private val path: Path = dataDir.resolve(CONFIG_FILE_NAME)
 
@@ -31,28 +30,39 @@ internal class PlaytimeConfig(
         }
     }
 
-    private val loader: YamlConfigurationLoader by reloadable {
+    private val rootNode: ConfigurationNode by reloadable {
         YamlConfigurationLoader.builder()
-            .path(path)
+            .indent(2)
             .nodeStyle(NodeStyle.BLOCK)
-            .defaultOptions { options -> options.serializers { it.register(DatabaseCredentials::class.java, DatabaseCredentialsSerializer) } }
-            .build()
+            .defaultOptions { options ->
+                options.serializers {
+                    it.register(DatabaseCredentials::class.java, DatabaseCredentialsSerializer)
+                }
+            }
+            .buildAndLoadString(path.readText())
     }
 
-    private val root: ConfigurationNode by reloadable { loader.load() }
-
-    val databaseCredentials: DatabaseCredentials by reloadable { root.node("database").krequire() }
+    val databaseCredentials: DatabaseCredentials by reloadable {
+        rootNode.node("database").krequire()
+    }
 
     private fun initConfig() {
-        val resource = plugin::class.java.getResourceAsStream("/$CONFIG_FILE_NAME") ?: throw IllegalStateException("Missing default config file")
+        // mkdir
+        path.createDirectories()
+
+        // copy default config
+        val resource = plugin.javaClass.getResourceAsStream("/$CONFIG_FILE_NAME")
+            ?: throw IllegalStateException("missing default config file")
         resource.use { input ->
-            path.outputStream().use { output -> input.copyTo(output) }
+            path.outputStream().use { output ->
+                input.copyTo(output)
+            }
         }
     }
 }
 
 private inline fun <reified T> ConfigurationNode.krequire(): T {
-    return this.get(T::class.java) ?: throw IllegalStateException("Missing required value at '${this.path().joinToString(".")}'")
+    return this.get(T::class.java) ?: throw IllegalStateException("missing required value at '${this.path().joinToString(".")}'")
 }
 
 private object DatabaseCredentialsSerializer : TypeSerializer<DatabaseCredentials> {
@@ -67,6 +77,6 @@ private object DatabaseCredentialsSerializer : TypeSerializer<DatabaseCredential
     }
 
     override fun serialize(type: Type?, obj: DatabaseCredentials?, node: ConfigurationNode?) {
-        throw UnsupportedOperationException("DatabaseCredentials is not serializable")
+        throw UnsupportedOperationException()
     }
 }

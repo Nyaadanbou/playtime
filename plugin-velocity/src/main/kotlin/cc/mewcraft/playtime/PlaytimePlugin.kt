@@ -65,6 +65,8 @@ internal class PlaytimePlugin
 
     @Subscribe
     fun onProxyInitialization(event: ProxyInitializeEvent): Unit = runBlocking {
+        instance = this@PlaytimePlugin
+
         // 初始化配置文件
         if (!dataDirectory.exists()) {
             dataDirectory.createDirectories()
@@ -84,17 +86,12 @@ internal class PlaytimePlugin
         getPlaytimeChannel = GetPlaytimeResponseChannel(redis, dataManager)
         setPlaytimeChannel = SetPlaytimeResponseChannel(redis, dataManager)
 
-        // 初始化 plugin instance
-        instance = this@PlaytimePlugin
-
         // 初始化 PlaytimeProvider
         PlaytimeProvider.register(this@PlaytimePlugin)
     }
 
     @Subscribe
     fun onProxyShutdown(event: ProxyShutdownEvent): Unit = runBlocking {
-        instance = null
-
         tickManager.stop()
         dataManager.shutdown()
         database.shutdown()
@@ -102,6 +99,7 @@ internal class PlaytimePlugin
         mainScope.cancel("Shutting down")
 
         PlaytimeProvider.unregister()
+        instance = null
     }
 
     fun reload() {
