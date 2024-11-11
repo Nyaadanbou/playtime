@@ -24,13 +24,13 @@ import kotlinx.coroutines.*
 import org.slf4j.Logger
 import java.nio.file.Path
 import java.util.UUID
-import java.util.concurrent.Executor
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.io.path.createDirectories
 import kotlin.io.path.exists
 
 internal val plugin: PlaytimePlugin
-    get() = PlaytimePlugin.instance ?: error("instance is not initialized yet")
+    get() = PlaytimePlugin.instance ?: throw IllegalStateException("instance not set yet")
 
 @Plugin(
     id = "playtime",
@@ -52,19 +52,18 @@ internal class PlaytimePlugin
         internal var instance: PlaytimePlugin? = null
     }
 
-    private val mainScope: CoroutineScope = CoroutineScope(
-        CoroutineName("playtime-main") + SupervisorJob() + createExecutor().asCoroutineDispatcher()
-    )
-
-    private lateinit var database: PlaytimeDatabase
-    private lateinit var dataManager: PlaytimeDataManager
     private lateinit var tickManager: PlaytimeTickManager
+    private lateinit var dataManager: PlaytimeDataManager
 
     private lateinit var getPlaytimeChannel: GetPlaytimeResponseChannel
     private lateinit var setPlaytimeChannel: SetPlaytimeResponseChannel
 
+    private lateinit var coroutineScope: CoroutineScope
+
     @Subscribe
-    fun onProxyInitialization(event: ProxyInitializeEvent): Unit = runBlocking {
+    fun onProxyInitialization(event: ProxyInitializeEvent) {
+        instance = this
+
         // 初始化配置文件
         if (!dataDirectory.exists()) {
             dataDirectory.createDirectories()
@@ -72,36 +71,33 @@ internal class PlaytimePlugin
         val config = PlaytimeConfig(dataDirectory).also(PlaytimeConfig::load)
 
         // 初始化 data manager
-        database = PlaytimeDatabase(mainScope, config).also { db -> db.load() }
-        dataManager = PlaytimeDataManager(mainScope, logger, database)
+        val database = PlaytimeDatabase.mariadb(config)
+        coroutineScope = CoroutineScope(SupervisorJob() + createVirtualThreadExecutor().asCoroutineDispatcher())
+        coroutineScope.launch { database.load() }
+        dataManager = PlaytimeDataManager.create(database, logger)
 
         // 初始化 tick manager
-        tickManager = PlaytimeTickManager(mainScope, server, dataManager)
+        tickManager = PlaytimeTickManager(this, dataManager)
         tickManager.start()
 
-        // 初始化 msg channel
+        // 初始化 channel
         val redis = RedisProvider.redisProvider().getRedis()
         getPlaytimeChannel = GetPlaytimeResponseChannel(redis, dataManager)
         setPlaytimeChannel = SetPlaytimeResponseChannel(redis, dataManager)
 
-        // 初始化 plugin instance
-        instance = this@PlaytimePlugin
-
         // 初始化 PlaytimeProvider
-        PlaytimeProvider.register(this@PlaytimePlugin)
+        PlaytimeProvider.register(this)
     }
 
     @Subscribe
-    fun onProxyShutdown(event: ProxyShutdownEvent): Unit = runBlocking {
+    fun onProxyShutdown(event: ProxyShutdownEvent) {
         instance = null
-
-        tickManager.stop()
-        dataManager.shutdown()
-        database.shutdown()
-
-        mainScope.cancel("Shutting down")
-
         PlaytimeProvider.unregister()
+        disposeCoroutineScope()
+    }
+
+    private fun disposeCoroutineScope() {
+        coroutineScope.cancel()
     }
 
     fun reload() {
@@ -112,17 +108,17 @@ internal class PlaytimePlugin
         server.eventManager.register(this, eventType, order, action)
     }
 
+    private fun createVirtualThreadExecutor(): ExecutorService {
+        return Executors.newCachedThreadPool(
+            ThreadFactoryBuilder().setNameFormat("playtime-main-%d").setThreadFactory(Thread.ofVirtual().factory()).build()
+        )
+    }
+
     override suspend fun getPlaytime(uuid: UUID): PlaytimeData {
         return dataManager.getPlayTime(uuid)
     }
 
     override suspend fun setPlaytime(uuid: UUID, playtimeData: PlaytimeData) {
         dataManager.setPlayTime(uuid, playtimeData)
-    }
-
-    private fun createExecutor(): Executor {
-        return Executors.newCachedThreadPool(
-            ThreadFactoryBuilder().setNameFormat("playtime-executor-%d").setThreadFactory(Thread.ofVirtual().factory()).build()
-        )
     }
 }

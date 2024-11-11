@@ -4,37 +4,34 @@ import cc.mewcraft.playtime.config.PlaytimeConfig
 import cc.mewcraft.playtime.data.PlaytimeData
 import cc.mewcraft.playtime.sql.PlaytimeSql
 import cc.mewcraft.playtime.sql.Sql
-import cc.mewcraft.playtime.util.Resources
 import cc.mewcraft.playtime.util.use
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.sql.Connection
-import java.util.UUID
+import java.util.*
 
 private const val UUID_COLUMN = "uuid"
 private const val PLAY_TIME_COLUMN = "play_time"
 
-internal fun PlaytimeDatabase(
-    scope: CoroutineScope, config: PlaytimeConfig,
-): PlaytimeDatabase {
-    return MariadbPlaytimeDatabase(scope, config)
-}
-
 internal interface PlaytimeDatabase {
+    companion object {
+        fun mariadb(config: PlaytimeConfig): PlaytimeDatabase {
+            return MariadbPlaytimeDatabase(config)
+        }
+    }
+
     suspend fun load()
 
     suspend fun getPlayTime(uniqueId: UUID): PlaytimeData?
 
     suspend fun setPlayTime(uniqueId: UUID, timeData: PlaytimeData)
 
-    suspend fun shutdown()
+    suspend fun close()
 }
 
 private class MariadbPlaytimeDatabase(
-    scope: CoroutineScope,
     config: PlaytimeConfig,
 ) : PlaytimeDatabase {
-    private val storageScope: CoroutineScope = scope + CoroutineName("playtime-storage")
-
     private val sql: Sql = PlaytimeSql(config.databaseCredentials)
 
     private val tablePrefix = config.databaseCredentials.tablePrefix
@@ -55,67 +52,67 @@ private class MariadbPlaytimeDatabase(
     private val connection: Connection
         get() = sql.connection.also { it.autoCommit = false }
 
-    private fun <T> useAsync(block: suspend Resources.() -> T) = storageScope.async {
-        use { block(this) }
+    override suspend fun getPlayTime(uniqueId: UUID): PlaytimeData? = withContext(Dispatchers.IO) {
+        use {
+            with(connection.use()) {
+                val getTimeStatement = prepareStatement(
+                    """
+                        |SELECT $PLAY_TIME_COLUMN
+                        |FROM $timeTableName
+                        |WHERE $UUID_COLUMN = ?;
+                        """.trimMargin()
+                ).use()
+                getTimeStatement.setString(1, uniqueId.toString())
+
+                val result = getTimeStatement.executeQuery()
+                if (result.next()) {
+                    return@withContext PlaytimeData(result.getLong("play_time"))
+                }
+            }
+            return@withContext null
+        }
     }
 
-    override suspend fun getPlayTime(uniqueId: UUID): PlaytimeData? = useAsync {
-        with(connection.use()) {
-            val getTimeStatement = prepareStatement(
-                """
-                    |SELECT $PLAY_TIME_COLUMN
-                    |FROM $timeTableName
-                    |WHERE $UUID_COLUMN = ?;
-                """.trimMargin()
-            ).use()
-
-            getTimeStatement.setString(1, uniqueId.toString())
-
-            val result = getTimeStatement.executeQuery()
-            if (result.next()) {
-                return@useAsync PlaytimeData(result.getLong("play_time"))
-            }
-        }
-
-        return@useAsync null
-
-    }.await()
-
-    override suspend fun setPlayTime(uniqueId: UUID, timeData: PlaytimeData): Unit = useAsync {
-        with(connection.use()) {
-            try {
-                val setTimeStatement = prepareStatement(
-                    """
+    override suspend fun setPlayTime(uniqueId: UUID, timeData: PlaytimeData) = withContext(Dispatchers.IO) {
+        use {
+            with(connection.use()) {
+                try {
+                    val setTimeStatement = prepareStatement(
+                        """
                         |INSERT INTO $timeTableName ($UUID_COLUMN, $PLAY_TIME_COLUMN)
                         |VALUES (?, ?)
                         |ON DUPLICATE KEY UPDATE $PLAY_TIME_COLUMN = VALUES($PLAY_TIME_COLUMN);
-                    """.trimMargin()
-                ).use()
-                setTimeStatement.setString(1, uniqueId.toString())
-                setTimeStatement.setLong(2, timeData.playTime)
-                setTimeStatement.execute()
-                commit()
-            } catch (e: Exception) {
-                rollback()
-                throw e
+                        """.trimMargin()
+                    ).use()
+                    setTimeStatement.setString(1, uniqueId.toString())
+                    setTimeStatement.setLong(2, timeData.playTime)
+                    setTimeStatement.execute()
+
+                    commit()
+                } catch (e: Exception) {
+                    rollback()
+                    throw e
+                }
             }
         }
-    }.await()
+    }
 
-    private suspend fun initTable(): Unit = useAsync {
-        with(connection.use()) {
-            try {
-                prepareStatement(playTimeTableSetupQuery).use().execute()
-                commit()
-            } catch (e: Exception) {
-                rollback()
-                throw e
+    private suspend fun initTable() = withContext(Dispatchers.IO) {
+        use {
+            with(connection.use()) {
+                try {
+                    prepareStatement(playTimeTableSetupQuery).use().execute()
+
+                    commit()
+                } catch (e: Exception) {
+                    rollback()
+                    throw e
+                }
             }
         }
-    }.await()
+    }
 
-    override suspend fun shutdown() {
-        storageScope.launch { sql.shutdown() }.join()
-        storageScope.cancel("Shutting down")
+    override suspend fun close() = withContext(Dispatchers.IO) {
+        sql.close()
     }
 }

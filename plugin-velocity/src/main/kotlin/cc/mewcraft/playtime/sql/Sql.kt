@@ -9,5 +9,5 @@ import java.sql.Connection
 internal interface Sql {
     val hikari: HikariDataSource?
     val connection: Connection
-    fun shutdown()
+    fun close()
 }
