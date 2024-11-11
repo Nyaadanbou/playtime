@@ -28,23 +28,6 @@ tasks {
     }
 }
 
-publishing {
-    repositories {
-        maven("https://repo.mewcraft.cc/private") {
-            credentials {
-                username = providers.gradleProperty("nyaadanbou.mavenUsername").orNull
-                password = providers.gradleProperty("nyaadanbou.mavenPassword").orNull
-            }
-        }
-    }
-    publications {
-        create<MavenPublication>("maven") {
-            artifactId = "paper"
-            from(components["java"])
-        }
-    }
-}
-
 paper {
     main = "cc.mewcraft.playtime.PlaytimePlugin"
     name = "Playtime"
