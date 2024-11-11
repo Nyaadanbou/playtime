@@ -11,7 +11,7 @@ version = "1.0.0-SNAPSHOT"
 dependencies {
     api(project(":common"))
     compileOnly(libs.paper)
-    compileOnly(libs.messenger.common)
+    compileOnly(libs.messenger)
 
     implementation(libs.mccoroutine.bukkit.api) {
         exclude("org.jetbrains.kotlin")

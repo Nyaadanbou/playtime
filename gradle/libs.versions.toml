@@ -5,7 +5,7 @@ kotlinx = "1.9.0-RC.2"
 paper = "1.21.1-R0.1-SNAPSHOT"
 velocity = "3.3.0-SNAPSHOT"
 mccoroutine = "2.19.0"
-messenger = "1.0.0-SNAPSHOT"
+messenger = "0.0.1"
 hikaricp = "5.1.0"
 jdbc-mariadb = "3.4.1"
 gson = "2.10.1"
@@ -30,9 +30,7 @@ kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-cor
 mccoroutine-bukkit-core = { group = "com.github.shynixn.mccoroutine", name = "mccoroutine-bukkit-core", version.ref = "mccoroutine" }
 mccoroutine-bukkit-api = { group = "com.github.shynixn.mccoroutine", name = "mccoroutine-bukkit-api", version.ref = "mccoroutine" }
 
-messenger-common = { group = "cc.mewcraft.messenger", name = "common", version.ref = "messenger" }
-messenger-paper = { group = "cc.mewcraft.messenger", name = "paper", version.ref = "messenger" }
-messenger-velocity = { group = "cc.mewcraft.messenger", name = "velocity", version.ref = "messenger" }
+messenger = { group = "cc.mewcraft.messenger", name = "common", version.ref = "messenger" }
 
 hikaricp = { group = "com.zaxxer", name = "HikariCP", version.ref = "hikaricp" }
 jdbc-mariadb = { group = "org.mariadb.jdbc", name = "mariadb-java-client", version.ref = "jdbc-mariadb" }
