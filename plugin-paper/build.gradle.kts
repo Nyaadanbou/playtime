@@ -1,8 +1,8 @@
 import net.minecrell.pluginyml.paper.PaperPluginDescription
 
 plugins {
-    id("playtime-conventions")
-    id("nyaadanbou-conventions.copy-jar")
+    `playtime-conventions`
+    `nyaadanbou-conventions`.`copy-jar`
     alias(libs.plugins.pluginyml.paper)
 }
 

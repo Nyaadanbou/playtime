@@ -1,5 +1,6 @@
 plugins {
-    id("playtime-conventions")
+    `maven-publish`
+    `playtime-conventions`
 }
 
 version = "0.0.1"

@@ -1,6 +1,6 @@
 plugins {
-    id("playtime-conventions")
-    id("nyaadanbou-conventions.copy-jar")
+    `playtime-conventions`
+    `nyaadanbou-conventions`.`copy-jar`
 }
 
 version = "1.0.0-SNAPSHOT"
