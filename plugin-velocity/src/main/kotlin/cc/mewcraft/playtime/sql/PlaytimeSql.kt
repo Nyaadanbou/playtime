@@ -8,7 +8,7 @@ import kotlin.math.min
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
-internal class PlayTimeSql(
+internal class PlaytimeSql(
     private val credentials: DatabaseCredentials,
 ) : Sql {
     override val hikari: HikariDataSource = buildSource()

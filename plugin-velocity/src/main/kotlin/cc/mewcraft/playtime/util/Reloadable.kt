@@ -1,6 +1,6 @@
 package cc.mewcraft.playtime.util
 
-import cc.mewcraft.playtime.event.PlayTimeReloadEvent
+import cc.mewcraft.playtime.event.PlaytimeReloadEvent
 import cc.mewcraft.playtime.plugin
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
@@ -11,7 +11,7 @@ internal class Reloadable<T>(private val loader: () -> T) : ReadOnlyProperty<Any
     private var value: T? = null
 
     init {
-        plugin.listen<PlayTimeReloadEvent> { reload() }
+        plugin.listen<PlaytimeReloadEvent> { reload() }
     }
 
     fun get(): T {

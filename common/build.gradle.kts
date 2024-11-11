@@ -5,7 +5,7 @@ plugins {
 version = "1.0.0-SNAPSHOT"
 
 dependencies {
-    compileOnly(libs.messenger.common)
+    compileOnly(libs.messenger)
     compileOnly(libs.gson)
 }
 

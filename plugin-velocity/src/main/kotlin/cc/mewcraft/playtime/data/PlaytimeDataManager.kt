@@ -1,19 +1,18 @@
 package cc.mewcraft.playtime.data
 
-import cc.mewcraft.playtime.plugin
-import cc.mewcraft.playtime.storage.PlayTimeDatabase
+import cc.mewcraft.playtime.storage.PlaytimeDatabase
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.benmanes.caffeine.cache.LoadingCache
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
+import com.google.common.util.concurrent.ThreadFactoryBuilder
+import kotlinx.coroutines.*
 import org.slf4j.Logger
-import java.util.*
-import java.util.concurrent.TimeUnit
+import java.util.UUID
+import java.util.concurrent.*
 
-interface PlayTimeDataManager {
+interface PlaytimeDataManager {
     companion object {
-        internal fun create(database: PlayTimeDatabase, logger: Logger): PlayTimeDataManager {
-            return PlayTimeDataManagerImpl(database, logger)
+        internal fun create(database: PlaytimeDatabase, logger: Logger): PlaytimeDataManager {
+            return PlaytimeDataManagerImpl(database, logger)
         }
     }
 
@@ -27,17 +26,25 @@ interface PlayTimeDataManager {
     }
 }
 
-private class PlayTimeDataManagerImpl(
-    private val database: PlayTimeDatabase,
-    private val logger: Logger
-) : PlayTimeDataManager {
+private class PlaytimeDataManagerImpl(
+    private val database: PlaytimeDatabase,
+    private val logger: Logger,
+) : PlaytimeDataManager {
     private val dataCache: LoadingCache<UUID, Deferred<PlaytimeData>> = Caffeine.newBuilder()
         .expireAfterAccess(3, TimeUnit.MINUTES)
         .build { uniqueId ->
-            plugin.scope.async {
+            coroutineScope.async(createVirtualThreadExecutor().asCoroutineDispatcher()) {
                 database.getPlayTime(uniqueId) ?: PlaytimeData()
             }
         }
+
+    private val coroutineScope = CoroutineScope(SupervisorJob() + createVirtualThreadExecutor().asCoroutineDispatcher())
+
+    private fun createVirtualThreadExecutor(): ExecutorService {
+        return Executors.newCachedThreadPool(
+            ThreadFactoryBuilder().setNameFormat("playtime-data-%d").setThreadFactory(Thread.ofVirtual().factory()).build()
+        )
+    }
 
     override suspend fun getPlayTime(uniqueId: UUID): PlaytimeData {
         logger.info("Getting play time for $uniqueId")
