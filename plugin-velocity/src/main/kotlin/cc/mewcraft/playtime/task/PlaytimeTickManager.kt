@@ -1,17 +1,17 @@
 package cc.mewcraft.playtime.task
 
-import cc.mewcraft.playtime.PlaytimePlugin
 import cc.mewcraft.playtime.data.PlaytimeData
 import cc.mewcraft.playtime.data.PlaytimeDataManager
-import com.google.common.util.concurrent.ThreadFactoryBuilder
+import com.velocitypowered.api.proxy.ProxyServer
 import kotlinx.coroutines.*
 import java.util.UUID
-import java.util.concurrent.*
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 internal class PlaytimeTickManager(
-    private val plugin: PlaytimePlugin,
+    scope: CoroutineScope,
+    private val server: ProxyServer,
     private val manager: PlaytimeDataManager,
 ) {
     companion object {
@@ -19,20 +19,14 @@ internal class PlaytimeTickManager(
         private val SAVE_DELAY = 1.toDuration(DurationUnit.MINUTES)
     }
 
-    private val server = plugin.server
-
     private val playTimeData: ConcurrentHashMap<UUID, Long> = ConcurrentHashMap()
-    private val coroutineScope = CoroutineScope(SupervisorJob() + createExecutor().asCoroutineDispatcher())
 
-    private fun createExecutor(): ExecutorService {
-        return Executors.newCachedThreadPool(
-            ThreadFactoryBuilder().setNameFormat("playtime-tick-%d").setThreadFactory(Thread.ofVirtual().factory()).build()
-        )
-    }
+    // 构建一个专门的 coroutine scope 执行无期限的 tick 逻辑
+    private val tickScope = scope + CoroutineName("playtime-tick")
 
     fun start() {
-        coroutineScope.launch {
-            while (true) {
+        tickScope.launch {
+            while (isActive) {
                 val players = server.allPlayers
                 for (player in players) {
                     val uuid = player.uniqueId
@@ -43,8 +37,8 @@ internal class PlaytimeTickManager(
             }
         }
 
-        coroutineScope.launch {
-            while (true) {
+        tickScope.launch {
+            while (isActive) {
                 for (playTimeDatum in playTimeData) {
                     manager.addPlayTime(playTimeDatum.key, PlaytimeData(playTimeDatum.value))
                 }
@@ -55,6 +49,6 @@ internal class PlaytimeTickManager(
     }
 
     fun stop() {
-        coroutineScope.cancel()
+        tickScope.cancel("Shutting down")
     }
 }

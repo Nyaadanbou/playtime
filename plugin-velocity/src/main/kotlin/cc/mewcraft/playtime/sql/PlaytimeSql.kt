@@ -16,7 +16,7 @@ internal class PlaytimeSql(
     override val connection: Connection
         get() = hikari.connection
 
-    override fun close() {
+    override fun shutdown() {
         hikari.close()
     }
 
