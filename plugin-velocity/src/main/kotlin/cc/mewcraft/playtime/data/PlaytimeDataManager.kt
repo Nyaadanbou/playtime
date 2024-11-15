@@ -43,12 +43,12 @@ private class PlaytimeDataManagerImpl(
         }
 
     override suspend fun getPlayTime(uniqueId: UUID): PlaytimeData {
-        logger.info("Getting play time for $uniqueId")
+        // logger.info("Getting play time for $uniqueId")
         return dataCache[uniqueId].await()
     }
 
     override suspend fun setPlayTime(uniqueId: UUID, timeData: PlaytimeData) {
-        logger.info("Setting play time for $uniqueId to $timeData")
+        // logger.info("Setting play time for $uniqueId to $timeData")
         database.setPlayTime(uniqueId, timeData)
         dataCache.invalidate(uniqueId)
     }
