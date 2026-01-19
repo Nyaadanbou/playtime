@@ -1,3 +1,5 @@
+import java.net.URI
+
 plugins {
     `kotlin-dsl`
 }
@@ -6,12 +8,10 @@ repositories {
     mavenCentral()
     gradlePluginPortal()
 
-    // 仓库提供: nyaadanbou version catalog, nyaadanbou conventions
-    maven("https://repo.mewcraft.cc/private") {
-        credentials {
-            username = providers.gradleProperty("nyaadanbou.mavenUsername").orNull
-            password = providers.gradleProperty("nyaadanbou.mavenPassword").orNull
-        }
+    maven {
+        name = "nyaadanbouPrivate"
+        url = URI("https://repo.mewcraft.cc/private")
+        credentials(PasswordCredentials::class) // 需要配置 gradle.properties 的凭据
     }
 }
 

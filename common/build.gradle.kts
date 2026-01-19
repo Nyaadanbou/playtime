@@ -1,9 +1,19 @@
+import java.net.URI
+
 plugins {
     `maven-publish`
     `playtime-conventions`
 }
 
 version = "0.0.1"
+
+repositories {
+    maven {
+        name = "nyaadanbouPrivate"
+        url = URI("https://repo.mewcraft.cc/private")
+        credentials(PasswordCredentials::class) // 需要配置 gradle.properties 的凭据
+    }
+}
 
 dependencies {
     compileOnly(libs.messenger)
@@ -12,11 +22,10 @@ dependencies {
 
 publishing {
     repositories {
-        maven("https://repo.mewcraft.cc/private") {
-            credentials {
-                username = providers.gradleProperty("nyaadanbou.mavenUsername").orNull
-                password = providers.gradleProperty("nyaadanbou.mavenPassword").orNull
-            }
+        maven {
+            name = "nyaadanbouReleases"
+            url = URI("https://repo.mewcraft.cc/releases")
+            credentials(PasswordCredentials::class) // 需要配置 gradle.properties 的凭据
         }
     }
 
